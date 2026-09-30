@@ -8,3 +8,5 @@
 - 02 Post-Training：这篇其实只有七层意思
 
 线上站点由 Vercel 部署。
+
+> Git 自动部署已连接；此提交用于触发首次 Vercel 自动部署。
