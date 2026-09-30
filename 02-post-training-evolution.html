@@ -1,0 +1,29 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Post-Training：七层意思｜学习博客</title><link rel="stylesheet" href="styles.css"></head>
+<body><div class="shell">
+<aside class="sidebar">
+<div class="brand">学习博客</div><div class="brand-sub">每篇只留下真正能复述的几层意思。</div>
+<div class="nav-title">文章</div><div class="nav">
+<a href="01-beyond-rl.html">01 · Beyond RL：六层意思</a>
+<a href="02-post-training-evolution.html">02 · Post-Training：七层意思</a>
+</div></aside>
+<main class="main"><a class="back" href="index.html">← 返回首页</a>
+<article class="article"><h1>Post-Training 这几年到底进化了什么：其实只有七层</h1>
+<h2>第一层：最早的 Post-Training 只是把“会续写”变成“会当助手”</h2>
+<p>InstructGPT 那一代的核心任务其实很单纯：预训练模型已经会语言，但它不会天然按照用户意图回答，也不知道什么样的回答更符合人类期待，所以才有 SFT、Reward Model 和 PPO 这条链。SFT 先教它“助手应该怎么答”，Reward Model 再把人类偏好变成一个可训练的分数，PPO 最后根据这个分数调整模型行为。这里最重要的不是 PPO，而是第一次把“语言模型会生成什么”和“人真正想让它怎么表现”接了起来，所以这一阶段的 RL 更像行为校正，真正的能力主体仍然主要来自预训练和 SFT。</p>
+<h2>第二层：后来大家发现，一次训练不够，模型自己也可以开始生产训练数据</h2>
+<p>到了 Llama 2、Llama 3 这一阶段，Post-Training 开始从一次性流水线变成循环，因为人工高质量数据太贵，也不可能无限扩。于是模型先自己生成很多回答，再用 Reward Model 或规则筛出好的，再把这些好回答拿回来训练自己，流程变成“生成—筛选—再训练—再生成”。这个变化的含义比 rejection sampling 本身更大：模型不再只是被训练的对象，它开始成为训练数据的生产者，Post-Training 第一次出现明显的自举结构。</p>
+<h2>第三层：RLVR 把奖励从“人觉得好不好”变成了“环境能不能直接验证”</h2>
+<p>偏好学习有一个天然限制，就是很多任务的好坏很主观，Reward Model 本质上仍然是在近似人类判断；但数学、代码这类任务不同，答案对不对、测试过不过是可以直接验证的。RLVR 的关键价值就在这里：奖励不再依赖“猜人类喜欢什么”，而可以直接来自环境本身。这个变化让 RL 第一次拥有了更稳定、更便宜、更容易规模化的训练信号，所以 RL 的角色开始从最后调味，往真正的能力训练工具移动。</p>
+<h2>第四层：DeepSeek-R1 真正改变的是大家对 RL 作用边界的判断</h2>
+<p>过去大家习惯把 SFT 理解成“教能力”，把 RL 理解成“调行为”，但 R1，尤其是 R1-Zero，给出了一个很强的反例：Base Model 在没有先接受完整传统 SFT 的情况下，通过大规模可验证奖励 RL，也能逐步长出明显的 reasoning 行为。真正重要的不是某条具体 recipe，而是它让大家开始认真接受一个新判断：在数学、代码、推理这些奖励清晰的任务上，RL 不只是 alignment，它本身可能直接参与能力形成。也正因为这样，后训练的重心才开始明显向 RL 倾斜。</p>
+<h2>第五层：当每种能力都能单独做 RL 后，一个模型一起学所有东西反而开始互相干扰</h2>
+<p>一旦数学、代码、搜索、Agent、安全都能分别做 RL，最自然的想法就是全部塞进一个大训练里，但实际问题是不同能力想把模型往不同方向拉：数学希望它更愿意长推理，代码强调执行正确性，Agent 强调工具和长轨迹，聊天又希望直接简洁，安全还有独立约束。于是一个统一 RL run 很容易出现能力干扰，也就是把 A 推高时把 B 压下去。这里真正逼出的新方案不是“多几个模型”，而是把能力优化问题拆开：既然一起练会打架，那就先分开练。</p>
+<h2>第六层：Specialist 时代真正解决的是“能力怎么单独爬山”，而 MOPD 解决的是“爬完以后怎么合回来”</h2>
+<p>从同一个 Base Model 出发，分别训练 Math、Code、Search、Agent、Safety Specialist，每个团队只盯自己的指标，就能把单项能力更激进地 hill-climb；但这只是把问题从“怎么同时学”转移成“最后怎么合”。MOPD 的位置就在这里：多个领域 teacher 各自很强，但最终还要训练一个 generalist student。它比传统蒸馏更关键的一点是 on-policy——不是老师提前写一堆固定答案让学生背，而是 student 先按自己当前能力去做，teacher 再围绕 student 当前真实轨迹来指导，所以训练分布会随着 student 一起移动。这使 Post-Training 从一条线真正变成“专家培养—能力合并”的系统。</p>
+<h2>第七层：所以今天 Post-Training 最难的问题，已经从“怎么把能力练出来”转成“怎么把很多能力无损装进一个模型”</h2>
+<p>一旦 specialist 路线成立，后面真正困难的就不再只是某个 loss 或某个 RL 算法，而是 teacher 和 student 差距太大怎么办、多个 teacher 之间能力冲突怎么办、什么时候 merge、merge 后是否遗忘、需不需要 final RL，以及整个数据、评测、infra 能不能支撑这条链长期跑起来。Nemotron 这类分阶段 teacher 进度的做法，本质上就是在处理 teacher-student gap；DPO 独立阶段感变弱，也反映 preference signal 正在被更大的 RL 系统吸收。最后你会发现，今天的 Post-Training 已经不像“SFT→DPO→RL”这种 recipe，而越来越像一个能力生产工厂：不同团队负责不同 specialist，分别产数据、跑 RL、做评测，最后再 consolidation 回 generalist。真正难复制的，越来越不是一张流程图，而是整套系统是否能持续运转。</p>
+<h2>一句话复述</h2>
+<p>Post-Training 这几年的进化可以压成一句话：<strong>最早是在调一个模型的行为，后来开始让模型自己产数据、用可验证奖励学能力，再后来把能力拆成多个 specialist 单独训练，今天真正的难点已经变成怎么把这些能力无损地合回一个 generalist。</strong></p></article>
+<footer>默认写法：先给总判断，再分层，每层一段讲清“问题—原因—方法—含义”。</footer>
+</main></div></body></html>
