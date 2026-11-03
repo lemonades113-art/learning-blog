@@ -1,206 +1,76 @@
-<!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CFOGraph：从论文节点图谱找到真正的研究缺口｜学习博客</title>
-<meta name="description" content="CFOGraph 研究地图：10 个技术节点、代表论文已经打通的边、业务因果图—决策依赖图—证据评分图、关键跨图连接及决定论文强度的实验。">
-<link rel="stylesheet" href="styles.css">
-<style>
-:root{--deep:#24554b;--blue:#e8f0fa;--gold:#fcf3da;--green:#e8f3eb;--ink:#242d29}
-.article{max-width:none}.article h1{margin:0 0 15px;font-size:40px}.article h2{scroll-margin-top:20px}.article h3{font-size:20px;line-height:1.5;margin:30px 0 9px;color:#285448}.article p{margin:10px 0 16px;line-height:1.95}.article p+p{margin-top:12px}.article a{color:var(--deep);text-decoration:underline;text-underline-offset:3px}.article ul,.article ol{padding-left:26px;line-height:1.9}.article li{margin:7px 0}.article blockquote{margin:20px 0;padding:5px 22px;border-left:4px solid #8eaa9e;background:#f7faf8}.article table{border-collapse:collapse;width:100%;margin:16px 0 24px;font-size:14px;line-height:1.75}.article th{background:#f0f5f1;color:#284b40;font-weight:750}.article th,.article td{text-align:left;padding:10px 12px;vertical-align:top;border-bottom:1px solid #e5eae5}.article .tablewrap{overflow-x:auto}.article .tablewrap table{min-width:660px}.article code{background:#f2f3ef;border-radius:4px;padding:1px 5px;font-size:.89em}.article pre{background:#1c2825;color:#e9f2ed;padding:20px 22px;overflow:auto;border-radius:14px;line-height:1.7;font-size:14px}.article pre code{background:none;color:inherit;padding:0}.article .eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:750;color:#60877b;margin-bottom:10px}.article .lead{font-size:19px;color:#3e5148;line-height:1.85}.article .callout{padding:22px 24px;margin:24px 0;border:1px solid #cbded4;border-radius:14px;background:#edf5f0;line-height:1.85}.article .caution{padding:17px 20px;margin:18px 0;border:1px solid #ead9a9;border-radius:12px;background:#fbf7eb;line-height:1.85}.article .toc{padding:18px 22px;background:#f7f8f5;border:1px solid var(--line);border-radius:14px;margin:28px 0}.article .toc div{font-size:12px;letter-spacing:.12em;color:#708377;font-weight:750;margin-bottom:8px}.article .toc a{display:block;padding:5px 0;text-decoration:none;font-size:14px}.article .toc a:hover{text-decoration:underline}.article .small{font-size:13px;color:#687d72}.article .tag{display:inline-block;font-size:12px;border-radius:30px;background:#e9f0ec;padding:3px 10px;color:#315f50;font-weight:650}.article .tag.gold{background:#fbecd1;color:#74551c}.article .tag.blue{background:#e9f1fc;color:#345b8a}.article .triptych{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:18px 0}.article .triptych>div{border:1px solid #e1e8e3;border-radius:14px;padding:17px;background:#fbfcfa}.article .triptych h4{font-size:15px;margin:0 0 6px;color:#294d43}.article .triptych p{font-size:14px;line-height:1.7;margin:0}.article .node-chain{display:flex;flex-direction:column;gap:6px;margin:25px auto;max-width:790px}.article .chain-node{display:flex;align-items:center;gap:14px;padding:14px 17px;border:1px solid #d9e4df;border-radius:11px;background:#f4f8f5}.article .chain-node .id{font-size:13px;font-weight:800;display:grid;place-items:center;flex:none;border-radius:8px;width:42px;height:40px;color:#304b6f;background:#e3edf9}.article .chain-node.mid{background:#fffaed;border-color:#eedbb2}.article .chain-node.mid .id{color:#765520;background:#f5e7c7}.article .chain-node.end{background:#f2f8f1}.article .chain-node.end .id{color:#275640;background:#dcece0}.article .chain-node strong{display:block;font-size:16px}.article .chain-node span{display:block;color:#718077;font-size:12px;line-height:1.5}.article .c-arrow{align-self:center;color:#8ba399;line-height:1;font-size:19px}.article .graphs{display:grid;gap:18px;margin:22px 0}.article .graphbox{padding:20px 22px;border-radius:15px;border:1px solid #dce7df;background:#f9fbf9}.article .graphbox.blue{background:#f8faff;border-color:#d8e5f5}.article .graphbox.gold{background:#fffaf0;border-color:#e9dcc0}.article .graphbox h4{font-size:17px;margin:0 0 8px;color:#304e45}.article .graphbox p{font-size:14px;margin:3px 0 10px}.article .gflow{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:12px 0 5px}.article .gflow .n{font-size:13px;border:1px solid #d9e5e0;padding:10px 13px;border-radius:9px;background:white;color:#293d34;min-width:103px;text-align:center;flex:1}.article .gflow .arr{color:#6a9281;font-size:18px;flex:none}.article .gbranch{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0}.article .gbranch .n{background:white;border:1px solid #d9e5e0;padding:11px 8px;text-align:center;border-radius:9px;font-size:13px;line-height:1.5}.article .gbranch .n.last{background:#e4f2e9;border-color:#b9d7c6}.article .gbranch .n.warn{background:#fbeccf;border-color:#edd29f}.article .edge-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:18px 0}.article .edge{padding:18px 16px;border:1px solid #dfe8e0;border-radius:14px;background:white}.article .edge h4{font-size:15px;margin:5px 0 8px}.article .edge p{font-size:14px;line-height:1.75;margin:0}.article .bignum{font-size:28px;line-height:1.1;font-weight:850;color:#42745e}.article .equation{background:#f2f4f0;padding:16px 18px;border-radius:10px;font-family:ui-monospace,SFMono-Regular,monospace;font-size:14px;overflow:auto}.article .case-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:16px 0}.article .case-grid>div{background:#f9faf8;border:1px solid #e1e8e1;border-radius:12px;padding:18px}.article .case-grid h4{margin:0 0 8px;font-size:15px}.article .roadmap{display:flex;flex-direction:column;gap:10px;margin:22px 0}.article .roadmap>div{display:flex;gap:16px;align-items:start;padding:14px 15px;background:#f6f8f5;border-radius:10px}.article .stepnum{width:35px;height:35px;flex:none;border-radius:50%;background:#e0ece4;display:grid;place-items:center;color:#235340;font-weight:800}.article .roadmap p{margin:0;font-size:15px}.article .highlight{font-weight:800;color:#265747}.article .footnote{font-size:13px;color:#718079;padding-top:12px;border-top:1px solid #e3eae5}
-@media(max-width:730px){.article h1{font-size:31px}.article .triptych,.article .edge-grid{grid-template-columns:1fr}.article .gbranch{grid-template-columns:repeat(2,1fr)}.article .case-grid{grid-template-columns:1fr}.article .gflow{flex-direction:column}.article .gflow .arr{transform:rotate(90deg)}.article .gflow .n{width:100%}}
-</style></head><body><div class="shell"><aside class="sidebar">
-<div class="brand">学习博客</div><div class="brand-sub">一条技术主链，穿透论文、代码、实验与证据。</div><div class="nav-title">本篇目录</div><div class="nav">
-<a href="index.html">← 返回博客首页</a>
-<a href="#problem">01 · 为什么用图来组织论文</a>
-<a href="#map">02 · 10 个研究节点</a>
-<a href="#prior">03 · 论文已连接的边</a>
-<a href="#ours">04 · 现有工程与断点</a>
-<a href="#three-graphs">05 · 三张图的机制</a>
-<a href="#edges">06 · 需要打通的 E1–E3</a>
-<a href="#case">07 · 付款预检示例</a>
-<a href="#strong">08 · 什么结果算 strong</a>
-<a href="#blindspot">09 · 评分盲区</a>
-<a href="#contributions">10 · 论文贡献结构</a>
-<a href="#actions">11 · 最小执行路线</a>
-<a href="#oral">12 · 给老师的口述</a>
-</div></aside>
-<main class="main"><a class="back" href="index.html">← 返回首页</a>
-<article class="article">
-<div class="eyebrow">12 · CFO / Agent Benchmark / Research Graph · 2026-11-03</div>
-<h1>CFOGraph：从论文节点图谱找到真正的研究缺口</h1>
-<p class="lead">核心问题：<strong>已有论文各自连通了哪些技术节点？哪些关键的跨图连接仍然缺少可验证证据？我们能不能把现有 CFO 工程变成一篇方法和实验都足够强的论文？</strong></p>
-<div class="callout">建议聚焦一条主链：<strong>企业财务事实的因果图 → Agent 必要专业决策依赖图 → 独立证据与评分图 → 模型实测的失败归因。</strong>连通图本身属于工程贡献；如果能通过受控干预证明哪些决策关键依赖导致模型失败，以及现有评分遗漏了什么，才有希望形成更强的研究贡献。</div>
-<nav class="toc"><div>CONTENT / 阅读路线</div><a href="#problem">一、为什么要从论文列表转向节点—边图谱</a><a href="#map">二、技术图谱：N1–N10</a><a href="#prior">三、代表论文已经连接了什么</a><a href="#ours">四、我们有哪些边，哪里尚未接通</a><a href="#three-graphs">五、三张核心图</a><a href="#edges">六、最值得验证的 E1/E2/E3</a><a href="#case">七、付款预检的完整干预示例</a><a href="#strong">八、什么实验结果足够 strong</a><a href="#blindspot">九、评分器漏测能力的盲区</a><a href="#contributions">十、CFOGraph 的贡献结构</a><a href="#actions">十一、工程恢复与实验路线</a><a href="#oral">十二、老师汇报口述版</a></nav>
-<h2 id="problem">一、研究定位：缺少节点，还是缺少可验证的边？</h2>
-<p>已有工作中，企业财务材料生成、Agent 工作流、DAG 难度控制、自动 Oracle、反事实任务对和评测反馈都有人做过。我们不能把几个已经存在的组件串接起来，就断言“首次构建了这样的闭环”。</p>
-<p><strong>研究的价值在于一条边能否改变科学判断。</strong>例如，把业务事件与专业决策连接之后，是否可以预测哪些事实改变会跨越付款决策边界？把决策与证据图连接之后，能否发现原 Rubric 未覆盖的关键控制要求？再把这两条映射带入模型实验，能否在控制文件长度和任务规模后稳定解释失败？</p>
-<p>因此整条论文叙事从“已有论文的节点覆盖”出发，最终落到“缺失连接的可证实增量”。</p>
-
-<h2 id="map">二、技术全链路：十个节点 N1–N10</h2>
-<div class="node-chain">
-<div class="chain-node"><div class="id">N1</div><div><strong>真实企业业务与规则</strong><span>合同、资金政策、审批权限、会计规则与业务约束</span></div></div><div class="c-arrow">↓</div>
-<div class="chain-node"><div class="id">N2</div><div><strong>财务事实与状态演化</strong><span>交易、单据、凭证、账簿、跨期状态</span></div></div><div class="c-arrow">↓</div>
-<div class="chain-node"><div class="id">N3</div><div><strong>任务及 Agent 可见材料</strong><span>任务目标、合法可见的证据和工具边界</span></div></div><div class="c-arrow">↓</div>
-<div class="chain-node mid"><div class="id">N4</div><div><strong>专业决策依赖</strong><span>哪些判断是最终财务决策的必要条件</span></div></div><div class="c-arrow">↓</div>
-<div class="chain-node mid"><div class="id">N5</div><div><strong>受控业务事实干预</strong><span>无关扰动、关键事实变化、证据缺失</span></div></div><div class="c-arrow">↓</div>
-<div class="chain-node mid"><div class="id">N6</div><div><strong>独立真值与反事实结果</strong><span>重算正确结论以及应改变、应保持的状态</span></div></div><div class="c-arrow">↓</div>
-<div class="chain-node end"><div class="id">N7</div><div><strong>Verifier 与业务评分</strong><span>结果断言、硬门、证据来源、评分可靠性</span></div></div><div class="c-arrow">↓</div>
-<div class="chain-node end"><div class="id">N8</div><div><strong>Agent 实际运行</strong><span>交付物、工具轨迹、执行结果和资源预算</span></div></div><div class="c-arrow">↓</div>
-<div class="chain-node end"><div class="id">N9</div><div><strong>能力失败归因</strong><span>证据、状态更新、规则应用和错误传播</span></div></div><div class="c-arrow">↓</div>
-<div class="chain-node end"><div class="id">N10</div><div><strong>难度实证校准</strong><span>模型表现是否与决策依赖、结构复杂度有关</span></div></div>
-</div>
-<p>这张图属于研究流程的主干，不代表所有箭头已经实现。N5 的干预必须反馈到 N2，重新生成业务世界；N10 的实测反馈可以作用于 N4/N5，帮助选择更有效的测试。但这样的反馈闭环，在已有研究里已有不少先例。</p>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CFO Research Contribution Graph｜论文节点、已验证连接与研究缺口</title><meta name="description" content="从 Anchor、TASTE、FinCUABuild、FinalityBench、DyVal 等已有论文抽象技术贡献节点，识别已验证连接和 CFO 工程可补的研究断链。"><link rel="stylesheet" href="styles.css"><style>
+.article{max-width:none}.article h1{margin-bottom:16px}.article h2{scroll-margin-top:25px}.article h3{font-size:20px;margin:30px 0 12px;color:#29594a}.article p{font-size:16px;line-height:1.95;margin:10px 0 17px}.article a{color:#2b6b56;text-decoration:underline;text-underline-offset:3px}.article .lead{font-size:19px;line-height:1.9;color:#40574d}.article .muted,.article small{color:#6b7b70;font-size:12px;line-height:1.6}.article .eyebrow{font-size:12px;text-transform:uppercase;color:#5b8574;letter-spacing:.13em;font-weight:800;margin-bottom:12px}.article .callout{border:1px solid #d0e3d7;background:#f1f8f3;border-radius:14px;padding:20px 24px;margin:22px 0;line-height:1.85}.article .caution{border:1px solid #e8d7ae;background:#fffaf0;padding:16px 20px;border-radius:12px;margin:18px 0;line-height:1.85}.article .tabs{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 22px}.article .tabs a{border:1px solid #dce5dc;background:#fff;border-radius:50px;font-size:13px;text-decoration:none;padding:6px 12px}.article table{width:100%;border-collapse:collapse;margin:15px 0 25px;font-size:13px;line-height:1.75}.article th,.article td{padding:10px 12px;text-align:left;border-bottom:1px solid #e3e9e4;vertical-align:top}.article th{background:#eff5f1;color:#36594b}.article .tablewrap{overflow-x:auto}.article .tablewrap table{min-width:790px}.article .matrix table{min-width:780px}.article .matrix th:not(:first-child),.article .matrix td:not(:first-child){text-align:center}.article .matrix .yes{color:#26754a;font-weight:800;font-size:20px}.article .matrix .none{color:#c5ccc5}.article .stat{display:inline-block;font-size:13px;color:#5c806e;font-weight:700;margin:0 6px}.article .graph{background:#f9fbf8;border:1px solid #dfe8dd;border-radius:16px;padding:16px;margin:22px 0}.article .graph figcaption{font-size:13px;color:#68766d;line-height:1.65;margin:12px 4px 2px}.article .rule{padding:17px 20px;background:#f7f8f5;border-radius:11px;margin:14px 0}.article .triptych{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:20px 0}.article .triptych>div{padding:17px;border:1px solid #dbe7de;border-radius:13px;background:#fbfcf9}.article .triptych h4{margin:0 0 8px;font-size:16px}.article .triptych p{font-size:14px;margin:0}.article code{font-size:.9em;background:#f1f4f1;padding:2px 5px;border-radius:5px}.article ol,.article ul{padding-left:24px;line-height:1.9}.article li{margin:7px 0}.article blockquote{border-left:4px solid #9fbaa7;padding:12px 20px;margin:20px 0;background:#f6f9f5}.article .strong{color:#245b48;font-weight:800}.article .pill{display:inline-block;background:#e6f1e9;color:#2b6f4d;border-radius:30px;padding:2px 9px;font-size:12px}.article .pillow{background:#fff1d5;color:#8d651c}.article .question{font-size:17px;color:#295c49;font-weight:750}.article .paperlinks{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin:18px 0}.article .paperlinks a{border:1px solid #e0e7e0;border-radius:8px;background:#fafcf9;padding:9px 12px;font-size:13px;text-decoration:none}.article .paperlinks a:hover{background:#eff6f0}.article .foot{border-top:1px solid #e1e7e1;padding-top:18px;font-size:13px;color:#718073}@media(max-width:760px){.article .triptych{grid-template-columns:1fr}.article .paperlinks{grid-template-columns:1fr}.article .graph{padding:3px}.article table{font-size:12px}}
+</style></head><body><div class="shell"><aside class="sidebar"><div class="brand">学习博客</div><div class="brand-sub">从论文已证明的技术连接出发，找到真正值得研究的断点。</div><div class="nav-title">CFO Research Contribution Map</div><div class="nav"><a href="index.html">← 返回所有文章</a><a href="#what">01 · 纠偏：这是什么图</a><a href="#nodes">02 · 贡献节点图谱</a><a href="#matrix">03 · 论文 × 节点</a><a href="#edges">04 · 论文 × 实证连接</a><a href="#gaps">05 · 候选缺边</a><a href="#ours">06 · 我们已有资产</a><a href="#story">07 · 最强叙事候选</a><a href="#validation">08 · 怎样证实 novel</a><a href="#papers">09 · 原论文入口</a><a href="#oral">10 · 汇报口述</a></div></aside><main class="main"><a href="index.html" class="back">← 返回博客首页</a><article class="article"><div class="eyebrow">12 · RESEARCH CONTRIBUTION GRAPH · REVISED · 2026-11-03</div><h1>研究贡献图：已有论文连通了什么，CFO 还缺哪条真正有价值的边？</h1><p class="lead">这张图的节点是<strong>技术贡献和研究能力</strong>，边表示<strong>同一篇论文实际实现并验证过的技术连接</strong>。它不是业务数据图、CFO 因果图，也不是我们打算搭建的系统架构图。</p><div class="callout"><strong>论文定位的正确顺序：</strong>原论文方法与实验 → 抽象技术节点 → 证明论文内部连接 → 叠加研究图谱 → 找候选断链 → 映射 CFO 已有资产 → 用强竞争论文反驳自己 → 提出可证伪的创新方案。</div><div class="tabs"><a href="#nodes">研究节点图</a><a href="#matrix">论文节点矩阵</a><a href="#edges">逐篇论文连接</a><a href="#gaps">候选缺边</a><a href="#ours">CFO 已实现部分</a><a href="#papers">论文 PDF</a></div>
+<h2 id="what">一、先纠偏：你要找的是研究领域拼图里缺的边</h2><p>此前我们画过“业务因果图 → 决策依赖图 → 评分证据图”。那是一个<strong>候选方法内部</strong>如何工作的设计。现在的问题更上游：在整个研究领域里，已有论文分别证明了什么？哪些论文之间能共享相同技术节点？有哪些连接还缺足够证据？又恰好有什么是 CFO 工厂已有资产能支持的？</p><p>区分三种很容易混淆的说法：<strong>同一论文已实验验证 A→B</strong>；<strong>论文甲验证 A→B，论文乙验证 B→C</strong>；<strong>我们猜 A→B→C 在 CFO 中会产生新的能力</strong>。后两种都不能自动升级为“有人已经验证完整 A→C”或“从未有人做 A→C”。</p>
+<h2 id="nodes">二、把已有研究抽象成八个可比较的技术节点</h2>
+<figure class="graph"><svg viewBox="0 0 900 420" role="img" aria-label="研究贡献节点图：八个研究能力节点，实线代表已有论文验证的技术连接，虚线代表待验证候选连接" style="width:100%;height:auto;display:block">
+<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6" fill="none" stroke="#548471" stroke-width="1.4"/></marker><marker id="arrdash" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6" fill="none" stroke="#b17b39" stroke-width="1.4"/></marker></defs>
+<g fill="none" stroke="#548471" stroke-width="2.2" marker-end="url(#arr)">
+<path d="M191 90H248"/><path d="M422 90H474"/><path d="M639 90H701"/>
+<path d="M566 130V249"/><path d="M337 130V249"/><path d="M421 285H470"/><path d="M650 285H698"/>
+</g>
+<g stroke="#b17b39" stroke-width="2.4" fill="none" stroke-dasharray="7 6" marker-end="url(#arrdash)">
+<path d="M152 129V283H247"/><path d="M793 129V220Q793 240 770 248"/><path d="M569 322V366H336V322"/>
+</g>
+<g fill="#fff" stroke="#d2e1d7">
+<rect x="15" y="42" width="175" height="90" rx="14"/><rect x="248" y="42" width="174" height="90" rx="14"/><rect x="474" y="42" width="165" height="90" rx="14"/><rect x="701" y="42" width="180" height="90" rx="14"/>
+<rect x="248" y="242" width="174" height="87" rx="14"/><rect x="474" y="242" width="176" height="87" rx="14"/><rect x="701" y="242" width="180" height="87" rx="14"/><rect x="15" y="242" width="174" height="87" rx="14"/>
+</g>
+<g font-family="Inter, sans-serif" text-anchor="middle" fill="#2c493d">
+<text x="102" y="65" font-size="13" font-weight="700">N1 · 真实数据先验</text><text x="102" y="88" font-size="12">业务规则 / 统计分布</text><text x="102" y="110" font-size="11" fill="#748679">FinancialAuditBench</text>
+<text x="335" y="65" font-size="13" font-weight="700">N2 · 状态型环境</text><text x="335" y="88" font-size="12">事件 / 状态 / 工具</text><text x="335" y="110" font-size="11" fill="#748679">Anchor · FinalityBench</text>
+<text x="557" y="65" font-size="13" font-weight="700">N3 · 任务生成</text><text x="557" y="88" font-size="12">任务 / 材料 / 目标</text><text x="557" y="110" font-size="11" fill="#748679">FinCUABuild</text>
+<text x="793" y="65" font-size="13" font-weight="700">N4 · 可控难度</text><text x="793" y="88" font-size="12">DAG / 工具路径</text><text x="793" y="110" font-size="11" fill="#748679">DyVal · TASTE</text>
+<text x="102" y="264" font-size="13" font-weight="700">N8 · 反馈迭代</text><text x="102" y="286" font-size="12">改题 / 进化 / 校准</text><text x="102" y="309" font-size="11" fill="#748679">TASTE · SGVEF</text>
+<text x="335" y="264" font-size="13" font-weight="700">N5 · 真值与检查</text><text x="335" y="286" font-size="12">Oracle / Verifier</text><text x="335" y="309" font-size="11" fill="#748679">Anchor · VerifierBench</text>
+<text x="562" y="264" font-size="13" font-weight="700">N6 · Agent 执行</text><text x="562" y="286" font-size="12">轨迹 / 结果 / 预算</text><text x="562" y="309" font-size="11" fill="#748679">FinCUABuild · TASTE</text>
+<text x="790" y="264" font-size="13" font-weight="700">N7 · 效度与归因</text><text x="790" y="286" font-size="12">评分有效 / 误差</text><text x="790" y="309" font-size="11" fill="#748679">AgentSuite · Finality</text>
+</g>
+<g font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#587363">
+<text x="205" y="80">01</text><text x="430" y="80">02</text><text x="648" y="80">03</text><text x="575" y="188">04</text><text x="346" y="190">05</text>
+</g>
+<g font-family="Inter, sans-serif" font-size="11" fill="#9b6c2d"><text x="28" y="180">候选：业务语义→评分要求</text><text x="662" y="189">候选：难度→有效性</text><text x="407" y="361">候选：实测归因→迭代</text></g>
+<rect x="16" y="388" width="22" height="3" fill="#548471"/><text x="45" y="393" font-family="Inter, sans-serif" font-size="12" fill="#566e60">已有论文覆盖的连接（示意，见下表逐篇证据）</text><line x1="530" y1="389" x2="556" y2="389" stroke="#b17b39" stroke-width="2.5" stroke-dasharray="5 5"/><text x="563" y="393" font-family="Inter, sans-serif" font-size="12" fill="#795e36">候选研究缺口（未证明全领域缺失）</text>
+</svg><figcaption>绿色实线代表已有研究覆盖的常见连接（仅为视觉摘要，精确论文和证据见下表）；金色虚线是需要进一步检索和实验的候选连接，不能称为已经确定的 research gap。研究能力节点 N1–N8 与 CFO 业务 DAG 中的节点不同。</figcaption></figure>
+<div class="tablewrap"><table><thead><tr><th>节点</th><th>可操作定义（输入 → 输出）</th><th>关键区别</th></tr></thead><tbody>
+<tr><td>N1 真实先验 / 业务规范</td><td>领域规则、业务分布、专家约束 → 可信生成条件</td><td>真实性不等于可执行环境</td></tr>
+<tr><td>N2 有状态环境</td><td>事件/规则 → 可更新、可观测的业务状态</td><td>静态材料不能自动算作动态工具执行</td></tr>
+<tr><td>N3 任务生成</td><td>场景/环境 → 指令、可见材料、交付目标</td><td>产题数量不说明效度</td></tr>
+<tr><td>N4 考点/难度控制</td><td>结构、约束、工具序列 → 预期能力难点</td><td>难度声明需接受模型实测</td></tr>
+<tr><td>N5 真值与 Verifier</td><td>权威状态/约束 → 正确解、执行检查、评分规则</td><td>生成器自己说 PASS 不等于可靠</td></tr>
+<tr><td>N6 Agent 真实运行</td><td>任务/工具/预算 → 轨迹、交付物、执行状态</td><td>offline QC 与真实模型评测分开</td></tr>
+<tr><td>N7 评分效度/失败归因</td><td>轨迹、真值、证据 → 可支持的能力解释</td><td>总体得分与具体失败机制分开</td></tr>
+<tr><td>N8 校准及反馈优化</td><td>实测失败与覆盖 → 调整任务选择或生成过程</td><td>优化任务有效性，避免只追求降分</td></tr>
+</tbody></table></div>
+<h2 id="matrix">三、论文 × 技术节点覆盖矩阵</h2><p>矩阵中的 ● 表示该论文的核心机制或实验涉及该研究节点；它仅是<strong>节点覆盖</strong>，真正是否建立了连接要看下一张表。空白也只意味着这份筛选没有相应直接证据。</p><div class="tablewrap matrix"><table><thead><tr><th>论文</th><th>N1</th><th>N2</th><th>N3</th><th>N4</th><th>N5</th><th>N6</th><th>N7</th><th>N8</th></tr></thead><tbody><tr><td><a href="https://arxiv.org/abs/2609.32835" target="_blank" rel="noopener">FinancialAuditBench</a></td><td class="yes">●</td><td class="yes">●</td><td class="yes">●</td><td class="none">·</td><td class="none">·</td><td class="none">·</td><td class="none">·</td><td class="none">·</td></tr><tr><td><a href="https://arxiv.org/abs/2605.26321" target="_blank" rel="noopener">Anchor</a></td><td class="none">·</td><td class="yes">●</td><td class="yes">●</td><td class="yes">●</td><td class="yes">●</td><td class="yes">●</td><td class="none">·</td><td class="none">·</td></tr><tr><td><a href="https://arxiv.org/abs/2609.07603" target="_blank" rel="noopener">FinCUABuild</a></td><td class="none">·</td><td class="none">·</td><td class="yes">●</td><td class="none">·</td><td class="yes">●</td><td class="yes">●</td><td class="none">·</td><td class="none">·</td></tr><tr><td><a href="https://proceedings.iclr.cc/paper_files/paper/2024/hash/4ea4a1ea4d9ff273688c8e92bd087112-Abstract-Conference.html" target="_blank" rel="noopener">DyVal</a></td><td class="none">·</td><td class="none">·</td><td class="yes">●</td><td class="yes">●</td><td class="none">·</td><td class="yes">●</td><td class="none">·</td><td class="none">·</td></tr><tr><td><a href="https://arxiv.org/abs/2605.28556" target="_blank" rel="noopener">TASTE</a></td><td class="none">·</td><td class="none">·</td><td class="yes">●</td><td class="yes">●</td><td class="none">·</td><td class="yes">●</td><td class="none">·</td><td class="yes">●</td></tr><tr><td><a href="https://aclanthology.org/2026.acl-long.1224/" target="_blank" rel="noopener">SGVEF-LOOP</a></td><td class="none">·</td><td class="none">·</td><td class="yes">●</td><td class="yes">●</td><td class="yes">●</td><td class="yes">●</td><td class="none">·</td><td class="yes">●</td></tr><tr><td><a href="https://arxiv.org/abs/2609.04706" target="_blank" rel="noopener">FinalityBench</a></td><td class="none">·</td><td class="yes">●</td><td class="yes">●</td><td class="none">·</td><td class="yes">●</td><td class="yes">●</td><td class="yes">●</td><td class="none">·</td></tr><tr><td><a href="https://arxiv.org/abs/2607.08093" target="_blank" rel="noopener">CausalDS</a></td><td class="yes">●</td><td class="none">·</td><td class="yes">●</td><td class="none">·</td><td class="yes">●</td><td class="yes">●</td><td class="none">·</td><td class="none">·</td></tr><tr><td><a href="https://arxiv.org/abs/2610.28679" target="_blank" rel="noopener">VerifierBench</a></td><td class="none">·</td><td class="none">·</td><td class="none">·</td><td class="none">·</td><td class="yes">●</td><td class="none">·</td><td class="yes">●</td><td class="none">·</td></tr><tr><td><a href="https://proceedings.mlr.press/v306/suh26a.html" target="_blank" rel="noopener">AgentSuite / COBA</a></td><td class="none">·</td><td class="yes">●</td><td class="yes">●</td><td class="none">·</td><td class="yes">●</td><td class="none">·</td><td class="yes">●</td><td class="none">·</td></tr><tr><td><a href="https://arxiv.org/abs/2610.20099" target="_blank" rel="noopener">EvalBuilder</a></td><td class="none">·</td><td class="none">·</td><td class="none">·</td><td class="none">·</td><td class="none">·</td><td class="yes">●</td><td class="none">·</td><td class="yes">●</td></tr><tr><td><a href="https://arxiv.org/abs/2603.20807" target="_blank" rel="noopener">BenchBench</a></td><td class="none">·</td><td class="none">·</td><td class="yes">●</td><td class="none">·</td><td class="yes">●</td><td class="yes">●</td><td class="none">·</td><td class="yes">●</td></tr></tbody></table></div>
+<h2 id="edges">四、论文 × 已经打通的边：必须看 Methods 和 Experiments</h2><p>这张表是论文 gap 研究的主体。链接指向已经核对到的正式论文页。这里的“已连接”以原文摘要和公开方法的支持为起点，最终严谨版本仍需逐页补上章节、实验图表、代码位置与边的证据等级。</p><div class="tablewrap"><table><thead><tr><th>论文</th><th>覆盖节点</th><th>已建立的典型连接与机制证据</th><th>对 CFO 新颖性的压力</th></tr></thead><tbody><tr><td><small>P01</small><br><a href="https://arxiv.org/abs/2609.32835" target="_blank" rel="noopener">FinancialAuditBench</a></td><td>N1·N2·N3</td><td><strong>N1→N2→N3</strong><br><span class="muted">真实审计统计先验与专家知识生成合成审计项目及任务</span></td><td>真实性与任务构造，不证明 CFO 专业难度自动可控</td></tr><tr><td><small>P02</small><br><a href="https://arxiv.org/abs/2605.26321" target="_blank" rel="noopener">Anchor</a></td><td>N2·N3·N4·N5·N6</td><td><strong>N2→N3、N3→N5、N4→N6</strong><br><span class="muted">统一约束生成环境/指令/求解结果/状态验证，并检验生成参数与实际难度</span></td><td>统一规格与参数化难度已有先例</td></tr><tr><td><small>P03</small><br><a href="https://arxiv.org/abs/2609.07603" target="_blank" rel="noopener">FinCUABuild</a></td><td>N3·N5·N6</td><td><strong>N3→N5→N6</strong><br><span class="muted">自动生成金融 CUA 任务、环境和验证器；执行测试及质量门评价产物</span></td><td>金融领域的自动产题及质量验证已有先例</td></tr><tr><td><small>P04</small><br><a href="https://proceedings.iclr.cc/paper_files/paper/2024/hash/4ea4a1ea4d9ff273688c8e92bd087112-Abstract-Conference.html" target="_blank" rel="noopener">DyVal</a></td><td>N3·N4·N6</td><td><strong>N3→N4→N6</strong><br><span class="muted">用 DAG 结构生成受控复杂度推理题，并测试模型表现</span></td><td>图结构控制难度已做；不能把节点数等同于 CFO 业务决策难度</td></tr><tr><td><small>P05</small><br><a href="https://arxiv.org/abs/2605.28556" target="_blank" rel="noopener">TASTE</a></td><td>N3·N4·N6·N8</td><td><strong>N3→N4→N6→N8</strong><br><span class="muted">从工具序列出发生成任务，覆盖工具组合并迭代演化难度</span></td><td>覆盖—评测—难度反馈闭环已做</td></tr><tr><td><small>P06</small><br><a href="https://aclanthology.org/2026.acl-long.1224/" target="_blank" rel="noopener">SGVEF-LOOP</a></td><td>N3·N4·N5·N6·N8</td><td><strong>N3→N5、N5→N6、N6→N8</strong><br><span class="muted">MCP 图拓扑探索、事实增强的变形测试对、双约束校验和执行反馈</span></td><td>图覆盖 + 任务对 + 验证 + 反馈并非尚无人连接</td></tr><tr><td><small>P07</small><br><a href="https://arxiv.org/abs/2609.04706" target="_blank" rel="noopener">FinalityBench</a></td><td>N2·N3·N5·N6·N7</td><td><strong>N2→N3、N5→N6、N6→N7（结果分析）</strong><br><span class="muted">金融权威事件日志和不同系统投影，反事实双生题及经济后果评分</span></td><td>反事实、金融状态与经济后果评分已经相连</td></tr><tr><td><small>P08</small><br><a href="https://arxiv.org/abs/2607.08093" target="_blank" rel="noopener">CausalDS</a></td><td>N1·N3·N5·N6</td><td><strong>N1→N3→N5→N6</strong><br><span class="muted">合成 SCM、观测数据、语言故事与多种因果任务；确定性评分</span></td><td>使用因果图生成可评分任务已有人做</td></tr><tr><td><small>P09</small><br><a href="https://arxiv.org/abs/2610.28679" target="_blank" rel="noopener">VerifierBench</a></td><td>N5·N7</td><td><strong>N5→N7（Verifier 有效性）</strong><br><span class="muted">对生成的 Verifier 用有效替代解与恶意无效解进行隐藏测试</span></td><td>验证器通过自身样例不代表验证器可靠</td></tr><tr><td><small>P10</small><br><a href="https://proceedings.mlr.press/v306/suh26a.html" target="_blank" rel="noopener">AgentSuite / COBA</a></td><td>N2·N3·N5·N7</td><td><strong>N2/N3/N5→N7（组件审计）</strong><br><span class="muted">从 User/Environment/Ground Truth/Evaluation 四组件审计任务有效性</span></td><td>组件级评测链审计已是最强相邻竞争</td></tr><tr><td><small>P11</small><br><a href="https://arxiv.org/abs/2610.20099" target="_blank" rel="noopener">EvalBuilder</a></td><td>N6·N8</td><td><strong>N6→N8</strong><br><span class="muted">测试低成本代理评测保留模型排名、泛化、稳健性与区分度</span></td><td>评测分数是否保持能力结论已有人研究</td></tr><tr><td><small>P12</small><br><a href="https://arxiv.org/abs/2603.20807" target="_blank" rel="noopener">BenchBench</a></td><td>N3·N5·N6·N8</td><td><strong>N3→N5→N6、N6→N8（诊断）</strong><br><span class="muted">多模型答题者面板、客观检查与心理测量诊断评价生成评测集</span></td><td>数据集质量和区分度指标也已有先例</td></tr></tbody></table></div>
+<div class="caution"><strong>强制的证据门槛：</strong>论文同时有任务、Oracle、模型分数，不代表它实证证明了“任务难度导致某类模型错误”。只有当同一工作提供了明确控制变量、测试协议与结果，该因果连接才可以标为 VERIFIED。没有全文/代码证据时标为 IMPLEMENTED、CLAIMED 或 UNKNOWN。</div>
+<h2 id="gaps">五、叠加已有论文后，最值得研究的候选断链是什么？</h2><p>目前不适合说“已有研究都没有连”。Anchor、TASTE、SGVEF-LOOP、FinalityBench、CausalDS、AgentSuite 都连通了相当长的技术链。要找的不是某两个普通模块之间空白的箭头，而是<strong>已有连接是否在真实企业财务任务上满足同一套可靠性要求</strong>。</p>
 <div class="triptych">
-<div><span class="tag blue">N1–N3 · 业务世界</span><h4>把真实财务事实建出来</h4><p>业务规则、事件、账务和 Agent 的可见材料要一致。</p></div>
-<div><span class="tag gold">N4–N6 · 决策机制</span><h4>决定考什么、怎么干预</h4><p>找出真正改变业务结论的关键依赖，重新计算真值。</p></div>
-<div><span class="tag">N7–N10 · 测量有效性</span><h4>证明测到了什么能力</h4><p>评分、运行、错误归因、难度的跨模型验证。</p></div>
-</div>
-
-<h2 id="prior">三、代表论文连通了哪些边？</h2>
-<div class="tablewrap"><table><thead><tr><th>论文</th><th>原论文中已覆盖的连接</th><th>对 CFO 的研究约束</th></tr></thead><tbody>
-<tr><td>FinancialAuditBench</td><td>企业真实统计先验 → 合成财务材料 → 专家审查 → Agent 任务</td><td>真实财务数据不能只靠内部自洽</td></tr>
-<tr><td><a href="https://arxiv.org/abs/2605.26321" target="_blank" rel="noopener">Anchor</a></td><td>统一业务规格 → 任务 / 环境 / Solver / Verifier → 模型难度</td><td>联合生成与参数化难度已有先例</td></tr>
-<tr><td><a href="https://arxiv.org/abs/2609.07603" target="_blank" rel="noopener">FinCUABuild</a></td><td>金融工作流 → 自动任务/环境/验证器 → 运行质量与区分度</td><td>生成任务并验证其质量已有先例</td></tr>
-<tr><td><a href="https://arxiv.org/abs/2609.04706" target="_blank" rel="noopener">FinalityBench</a></td><td>权威事件 → 系统状态分歧 → 反事实任务对 → 经济后果</td><td>金融领域的反事实与后果评分已有先例</td></tr>
-<tr><td>DyVal</td><td>DAG 结构参数 → 动态题目 → 模型表现</td><td>从图结构控制难度已有研究基础</td></tr>
-<tr><td>TASTE</td><td>工具序列覆盖 → 生成任务 → 评测反馈 → 难度迭代</td><td>模型反馈驱动覆盖与难度优化已有先例</td></tr>
-<tr><td>CausalDS</td><td>结构因果模型 → 观测数据 → 因果任务 → 能力评分</td><td>因果图生成任务不是首创</td></tr>
-<tr><td>SGVEF-LOOP</td><td>图拓扑覆盖 → 变形测试任务对 → 约束验证 → Agent 执行反馈</td><td>图覆盖、配对测试与反馈已有组合</td></tr>
-<tr><td>CausalPrism</td><td>因果推理原语 → 图任务 → 分项能力测量</td><td>拆解因果能力本身已有先例</td></tr>
-<tr><td>VerifierBench</td><td>任务 → 生成验证器 → 对合法与非法解进行测试</td><td>Verifier 可靠性本身需要独立验证</td></tr>
+<div><span class="pill">G1 · 候选</span><h4>专业考点的因果可控性</h4><p>N1/N2 → N4 → N6：真实财务规则中的哪个必要决策条件导致模型行为变化？能否与单纯的文件数、DAG 节点数分开测？<br><br><strong>最强竞争：</strong>Anchor、DyVal、CausalDS、FinalityBench。</p></div>
+<div><span class="pill">G2 · 候选</span><h4>考点与评分的可追溯对齐</h4><p>N4 → N5 → N7：每个关键业务判断是否有独立证据检查？能否找出旧 Rubric 的漏测和误判？<br><br><strong>最强竞争：</strong>AgentSuite/COBA、VerifierBench、Anchor。</p></div>
+<div><span class="pill">G3 · 候选</span><h4>失败驱动的有效难度反馈</h4><p>N6 → N7 → N8 → N4：能否从可验证的专业失败出发选择下一批任务，既提高区分度又不破坏业务真实性？<br><br><strong>最强竞争：</strong>TASTE、SGVEF-LOOP、BenchBench、EvalBuilder。</p></div></div>
+<p><strong>我的排序：</strong>优先检验 G1 + G2 能否构成一个不可拆分的方法贡献；G3 暂作可扩展方向。G3 的闭环与 TASTE、SGVEF-LOOP 接近，如果没有强实验证据，很容易被审稿人认为只是在金融场景做迁移。</p>
+<h2 id="ours">六、把 CFO 已做的放在同一张科研贡献图上</h2><p>以下是基于用户上传的 <code>fin_long_tasks</code>、<code>simeco</code> 审计笔记的现状，需以当前私有仓库再次核实。不能把“有代码”“有文件”“离线测试通过”“真实运行”“专家校准”混为一个状态。</p><div class="tablewrap"><table><thead><tr><th>研究节点/边</th><th>我们已有的资产</th><th>严格证据状态</th><th>最需要补的连接</th></tr></thead><tbody>
+<tr><td>N1/N2 业务事实与环境</td><td>simeco 的事件→单据→凭证→账簿→报表链；CFO 跨期状态机</td><td>两个上游资产均有工程记录；当前 CFO 100 题未证明完整逐笔接线</td><td>逐笔事实→CFO 任务材料与真值</td></tr>
+<tr><td>N3/N4 产题与难度控制</td><td>fin_cfo 任务族、24 个月状态机、Reasoning DAG、陷阱规则</td><td>可生成与离线 QC；展开节点多含重复模板</td><td>结构复杂度→独立专业考点→实测能力差异</td></tr>
+<tr><td>N5 验证评分</td><td>Golden、Rubric、Verifier、Hard Gate</td><td>已有实现；样题发现门禁与关键考点覆盖缺口</td><td>业务关键判断→可执行评分证据</td></tr>
+<tr><td>N6/N7 运行与归因</td><td>Harness、部分既往模型运行、Weakness 标签资产</td><td>不能据此推断 CFO 100 题已完成实证归因</td><td>配对干预与真实轨迹的可复现对照</td></tr>
+<tr><td>N8 实证校准</td><td>L5–L7 设计等级、QC 和反馈思路</td><td>设计尺度，正式能力难度校准不足</td><td>专家、模型、holdout 三重校准</td></tr>
 </tbody></table></div>
-<p><strong>这张表真正告诉我们：</strong>整个图里的大部分节点都已经有人研究过，相邻节点之间常见的连接也有先例。研究缺口应该进一步收敛到：能否在同一个复杂企业财务世界中，将真实业务因果机制、专业决策依赖和独立评分证据建立可检查的对应关系，并据此解释模型的实际错误。</p>
-
-<h2 id="ours">四、我们现有的工程资产与连接断点</h2>
-<div class="tablewrap"><table><thead><tr><th>连接</th><th>已有资产</th><th>审计判断</th></tr></thead><tbody>
-<tr><td>N1 → N2 业务规则到财务事实</td><td>simeco</td><td>已有事件、单据、凭证与账簿能力</td></tr>
-<tr><td>N2 → N3 业务世界到 CFO 任务</td><td>CFO 早期样板曾对接 simeco</td><td>当前 CFO 100 题未完整接通逐笔业务链</td></tr>
-<tr><td>N3 → N4 任务到解题 DAG</td><td><code>reasoning_dag.py</code></td><td>已有 DAG，但节点数量不等于独立专业判断数</td></tr>
-<tr><td>N4 → N5 依赖到业务干预</td><td>陷阱 catalog、状态机事件</td><td>局部机制存在，系统性的决策关键干预待验证</td></tr>
-<tr><td>N5 → N6 干预到正确结果</td><td><code>run_state_machine()</code>、Golden</td><td>原题真值可生成，反事实变化需额外独立复算</td></tr>
-<tr><td>N6 → N7 真值到评分</td><td>Rubric、<code>eval.py</code>、QC</td><td>样题中关键门禁与评分项有缺口</td></tr>
-<tr><td>N7 → N8 评分到实际模型</td><td>Harness 与历史运行资产</td><td>需冻结这批 CFO 任务的完整基线</td></tr>
-<tr><td>N8 → N9 轨迹到能力归因</td><td>过程项、陷阱项</td><td>尚不能充分证明失败与特定业务依赖对应</td></tr>
-<tr><td>N9 → N10 归因到实测难度</td><td>L5–L7 结构等级</td><td>缺少跨模型、跨任务的实证校准</td></tr>
-</tbody></table></div>
-<p class="small">依据此前上传的 <code>fin_long_tasks</code> 与 <code>simeco</code> 审计笔记，此页面没有直接重新运行私有仓库。代码存在、离线 QC 通过和模型能力已实证，是不同的证据层级。</p>
-<p>最关键的断点是：<strong>业务真实事实 → 专业决策关键节点 → 干预后真实状态变化 → 可观测且可验证的评分证据。</strong>如果只是文件互相引用，这属于工程集成；如果能够自动生成、独立重算并接受模型验证，就开始具备方法研究价值。</p>
-
-<h2 id="three-graphs">五、核心方法：三张 DAG 要各自定义，再建立严格映射</h2>
-<div class="graphs">
-<div class="graphbox blue"><span class="tag blue">GRAPH 1 · Business Causal Graph</span><h4>财务业务因果图：企业发生了什么？</h4><p>节点表示业务事实、单据、状态或决策；边表示业务规则中的依赖或状态传播。</p>
-<div class="gflow"><div class="n">采购合同 / 验收 / 发票</div><span class="arr">→</span><div class="n">应付确认与付款申请</div><span class="arr">→</span><div class="n">审批权限 + 资金可用性</div><span class="arr">→</span><div class="n">是否执行付款</div><span class="arr">→</span><div class="n">银行流水 / 凭证 / 报表</div></div>
-<p>对应 simeco 的逐笔事实与 CFO 跨期状态机。这里的“因果图”是受业务制度与模拟程序约束的<strong>机制图</strong>，不能将其直接宣称为从真实观测数据中识别出的统计因果关系。</p></div>
-<div class="graphbox gold"><span class="tag gold">GRAPH 2 · Decision Dependency Graph</span><h4>专业决策依赖图：Agent 真正必须判断什么？</h4><p>节点为必要专业判断，边为前置决策条件。</p>
-<div class="gbranch"><div class="n">供应商与付款单一致？</div><div class="n">审批有效及生效时间正确？</div><div class="n">资金是否充足？</div><div class="n">是否重复支付？</div></div>
-<div class="gflow"><div class="n">上述必要判断</div><span class="arr">→</span><div class="n">放行 / 暂缓 / 请求核实</div><span class="arr">→</span><div class="n">正确交付或执行结果</div></div>
-<p>关键在于识别能改变最终结论的节点，而非只统计 DAG 总量。审批缺失可能决定整笔款项必须 HOLD，而格式错误未必改变经济决策。</p></div>
-<div class="graphbox"><span class="tag">GRAPH 3 · Evidence & Verification Graph</span><h4>证据与验证图：凭什么判断 Agent 对或错？</h4><p>节点为原始证据、验证操作、判据和评分项；边表示证据支持关系。</p>
-<div class="gflow"><div class="n">审批记录 + 权限表 + 时间戳</div><span class="arr">→</span><div class="n">独立业务规则检查</div><span class="arr">→</span><div class="n">Oracle + 关键门禁</div><span class="arr">→</span><div class="n">评分与错误归因</div></div>
-<p>不能只因模型报告写了“已核对审批”就给满分，也不能把一种参考答案的表面格式当作唯一合法解。独立验证器需要接受正确变体并拒绝明确错误解。</p></div>
-</div>
-<h3>决策关键性：怎样把图节点变成可测量变量？</h3>
-<p>设业务世界为 W，正确决策为 d*(W)。对业务事实 x 实施合法干预，生成 W'。当 d*(W) 与 d*(W') 不同，说明该干预在该业务世界里跨越了一个决策边界。</p>
-<div class="equation">C(x; W, W') = 1[d*(W) ≠ d*(W')]</div>
-<p>这个二值定义是方法起点，不代表完整难度理论。未来可加入违规严重度、货币损失、跨期传播范围和耦合关系。核心研究问题是：<strong>决策关键依赖是否比普通 DAG 节点总数更能解释 Agent 的实际失败？</strong></p>
-
-<h2 id="edges">六、跨图需要真正验证的三条边：E1、E2、E3</h2>
-<div class="edge-grid">
-<div class="edge"><div class="bignum">E1</div><h4>业务事实 → 必要专业判断</h4><p>每项关键业务事实必须明确对应到决策图中哪个判断：审批有效性对应付款放行门，资金余额对应现金约束。</p></div>
-<div class="edge"><div class="bignum">E2</div><h4>专业判断 → 独立验证证据</h4><p>关键决策节点需映射到具体材料、可执行判据、正确结果和评分依据，避免只看文字叙述。</p></div>
-<div class="edge"><div class="bignum">E3</div><h4>受控事实干预 → 模型行为变化</h4><p>改动真实业务世界中的关键事实、重算 Oracle，再检查模型是否响应并定位失败机制。这一项是研究假设的实证部分。</p></div>
-</div>
-<p><strong>E1 + E2 构成方法；E3 构成研究证据。</strong>但这三类机制各有论文先例，必须进一步展示它们在 CFO 财务链路中带来了哪些前人没有充分测量的结果。</p>
-
-<h2 id="case">七、一个完整的付款预检干预示例</h2>
-<div class="case-grid">
-<div><h4>基础场景</h4><p>付款申请 <strong>100 万元</strong>；可用资金 <strong>120 万元</strong>；二级审批缺失；其余必要条件满足。</p><p><span class="tag gold">正确决策：暂缓付款</span></p></div>
-<div><h4>受控干预</h4><p>添加一条在决策时点前生效、由有权限人员完成的二级审批，其余关键事实保持不变。</p><p><span class="tag">干预后：允许放行</span></p></div>
-</div>
-<p><strong>业务图：</strong>插入审批事件并更新相关状态，不能只改题面文字。<strong>决策图：</strong>审批校验由不满足转为满足，综合决策随之变化，其余条件保持不变。<strong>证据图：</strong>重新生成审批、资金及决策断言，核实模型使用的是正确的审批记录。</p>
-<p>可以为每组干预生成一份机器可读的“因果变更凭证”（以下为建议接口，尚未在工程中实现）：</p>
-<pre><code>intervention:
-  target: approval_level_2
-  operation: add_valid_approval
-  effective_before_decision: true
-
-expected_delta:
-  approval_valid: false -&gt; true
-  payment_decision: HOLD -&gt; ELIGIBLE
-
-invariants:
-  - payment_amount
-  - supplier_identity
-  - cash_balance_before_execution
-
-evidence:
-  - approval_record_id
-  - authority_policy_id
-  - approval_timestamp
-
-verification:
-  - approval_rule_check
-  - payment_decision_check
-  - invariant_preservation_check</code></pre>
-<p>系统需要检查目标事实已变化、所有应变状态正确传播、其他不该变的业务事实保持不变。随后对同一个模型运行基础题和干预题；如果它没有按照新审批改变决定，再从交付物与轨迹分析是证据检索、状态更新、规则适用还是决策传播的问题。</p>
-<div class="caution"><strong>归因边界：</strong>观察到的轨迹只能支持行为层面的失败归因，不能直接证明模型内部真正如何思考。因果结论需要受控实验、独立真值与多次复现，不能单靠模型自己的解释文本。</div>
-
-<h2 id="strong">八、什么样的结果才真的算 strong？</h2>
-<div class="tablewrap"><table><thead><tr><th>研究层次</th><th>做到了什么</th><th>判断</th></tr></thead><tbody>
-<tr><td>Level A · 工程集成</td><td>simeco 接 CFO 状态机，自动生成任务、Golden、Rubric</td><td>工程价值高，独立方法新颖性偏弱</td></tr>
-<tr><td>Level B · 图耦合方法</td><td>业务图—决策图—证据图对齐，支持干预、重算与配对评分</td><td>具备方法贡献潜力</td></tr>
-<tr><td>Level C · 能力机制发现</td><td>验证哪些图结构预测模型失败、能否跨企业和任务泛化、能否发现评分盲区</td><td><strong>最有希望成为强论文</strong></td></tr>
-</tbody></table></div>
-<p>Anchor、TASTE 和 CausalPrism 等工作已经研究参数化任务难度、迭代反馈和因果能力拆解，所以 Level C 不能停留于“某个新指标与错误率正相关”。需要严格的匹配对照与泛化证据。</p>
-<ol><li><strong>匹配对照：</strong>使输入长度、文件数量、预算尽量接近，区分重复结构增加和关键决策依赖增加。</li>
-<li><strong>受控干预：</strong>明确哪个合法业务事实导致正确结论变化，保持其他关键变量不变。</li>
-<li><strong>独立验证：</strong>使用生成器之外的财务复算器重算，抽样交给专业人员核验。</li>
-<li><strong>多模型实证：</strong>固定工具、预算和场景，多模型重复运行，报告关键错误率、评分分歧与不确定性。</li>
-<li><strong>泛化测试：</strong>在未参与开发的企业、规则组合和其他任务族上验证同一机制。</li></ol>
-<p>单独在 R16 付款预检调出来的指标，可能只是场景特定的拟合。若能在 R6 月末关账、R9 税务或其他业务任务族中仍有预测价值，研究强度就会提高。</p>
-
-<h2 id="blindspot">九、还有一个可能更强的问题：评分器到底漏测了什么？</h2>
-<div class="gflow"><div class="n">业务要求：必须检查二级审批</div><span class="arr">→</span><div class="n">决策图：审批是必要条件</div><span class="arr">→</span><div class="n">评分图：缺少审批有效性检查</div><span class="arr">→</span><div class="n">绕过审批也可能高分</div></div>
-<p>如果决策图中的关键节点找不到对应 Verifier，就构成测量盲区；反过来，如果评分器要求不必要的表面格式，也可能误判正确的业务解。</p>
-<p>因此可以提出一类跨图一致性审计：检查专业决策依赖是否有可执行评分证据、每个高权重判据是否有真实业务依据、关键业务门是否具有足够的失败约束。</p>
-<p>已有样题记录的 <code>gating_count=0</code> 为这一问题提供了直接动机。真正有分量的实验应证明：图对齐审计找出了旧 Rubric 的真实漏测项，而这些项确实会改变模型的业务成功判定，并通过专家复核。</p>
-
-<h2 id="contributions">十、论文贡献应该怎样写？</h2>
-<p>推荐暂拟标题：</p>
-<div class="callout"><strong>CFOGraph: Causally Grounded and Verifiable Evaluation of Enterprise Financial Agents</strong></div>
-<h3>Contribution 1：Graph-grounded financial task construction</h3>
-<p>通过可追溯的财务机制图，结合业务单据、账务状态和跨期规则，生成具有真实业务依赖的任务。它是后续研究的可信基础。</p>
-<h3>Contribution 2：Decision-critical intervention and verification</h3>
-<p>建立业务图—决策图—证据图映射，支持关键事实干预、无关扰动、证据缺失测试以及独立 Oracle 与不变量检查。这是最值得打磨的核心方法。</p>
-<h3>Contribution 3：Empirical validity and capability attribution</h3>
-<p>跨模型、跨企业和跨任务族，检验决策关键依赖相对传统结构指标的解释力，定位现有评分中的关键盲区。这一项将决定整篇论文的科学价值。</p>
-<p>没有第三项，就很容易变成结构合理的 Benchmark 工程介绍。研究发现不应该提前写死，需要由实验的支持或反证来确定。</p>
-
-<h2 id="actions">十一、最小执行路线：先恢复一题，再扩第二个场景</h2>
-<p>第一步不是扩展到更多 CFO 题目，而是对 R16 付款预检建立一份从业务事实、关键判断到评分证据的完整映射。</p>
-<div class="roadmap">
-<div><span class="stepnum">1</span><p><strong>恢复业务图。</strong> 列出付款事件、单据、审批、资金、状态和业务约束，确定真实依赖。</p></div>
-<div><span class="stepnum">2</span><p><strong>恢复决策图。</strong> 找出真正影响放行、暂缓、核实的判断和关键路径，识别纯模板重复节点。</p></div>
-<div><span class="stepnum">3</span><p><strong>恢复证据图。</strong> 将每个关键决策映射到现有 Golden、Rubric、Verifier 和证据文件，标明已验证、仅声明、缺失。</p></div>
-<div><span class="stepnum">4</span><p><strong>构造一组合法干预。</strong> 改动审批事实，重算关联状态、Oracle 和关键门禁，检查所有应保持的不变量。</p></div>
-<div><span class="stepnum">5</span><p><strong>真实模型运行。</strong> 做基础题/干预题配对，在相同预算下多次运行，记录实际决策变化、执行证据与失败归因。</p></div>
-<div><span class="stepnum">6</span><p><strong>跨场景验证。</strong> 在 R6 月末关账中使用相同映射和干预协议，评估可复用性与研究增量。</p></div>
-</div>
-<div class="tablewrap"><table><thead><tr><th>输出对象</th><th>验收要看到什么</th></tr></thead><tbody>
-<tr><td>业务图</td><td>有业务含义的节点、状态、规则和真实依赖</td></tr>
-<tr><td>决策图</td><td>必要判断、关键条件、可能改变最终决定的节点</td></tr>
-<tr><td>证据图</td><td>每一关键判断的来源证据、Oracle 与评分检查</td></tr>
-<tr><td>跨图映射</td><td>已实现 / 仅声明 / 尚缺失的具体连接</td></tr>
-<tr><td>干预实验</td><td>改变的事实、影响的结果、正确性与不变量证明</td></tr>
-<tr><td>Agent 实测</td><td>原题—变体配对表现、失败位置、不同模型差异</td></tr>
-</tbody></table></div>
-
-<h2 id="oral">十二、给老师的口述版</h2>
-<blockquote><p>我最近把 CFO 相关的论文重新按技术链路梳理了一遍，发现已经有很多工作分别解决了真实金融任务、任务与验证器自动生成、图结构难度、反事实任务和模型评分问题，甚至一些连接已经做得非常完整，比如 Anchor、FinalityBench 和 TASTE。</p>
-<p>但从我们自己的 CFO 工厂来看，有一个值得进一步研究的点：我们已经有企业财务数据、跨期状态机和推理 DAG，但是 DAG 的结构复杂度、真正影响业务决策的专业依赖，以及评分能够验证的能力之间，还没有建立充分可靠的对应。</p>
-<p>所以我想从三张图切入。第一张是业务事实因果图，记录交易、单据、账簿和状态怎样变化；第二张是专业决策依赖图，表示完成任务到底必须判断哪些业务条件；第三张是证据验证图，表示每个关键判断由什么材料和评分规则验证。</p>
-<p>方法上，让三张图保持一致，然后围绕真正影响决策的节点生成受控变体。比如增加无关材料时正确决策应该不变，修改有效审批时正确决策应该变化，关键证据缺失时 Agent 应该暂缓或核实。</p>
-<p>最重要的实验是证明：相比增加文件数、DAG 节点数和执行长度，这些决策关键依赖能不能更好地解释模型为什么失败；同时还能发现原有 Rubric 漏测的业务风险。</p>
-<p>如果这条链能在付款预检、月末关账等不同场景上得到验证，我们的贡献就可以从自动产题，提升到一种面向真实企业工作流的可控能力评测方法。</p></blockquote>
-<div class="callout"><strong>最终研究押注：</strong>业务因果图 → 决策关键依赖图 → 独立证据评分图 → 模型实测失败归因。<br><strong>分水岭：</strong>是否能用可复现的独立实验，证明这种跨图映射识别出旧 Benchmark 测不准的专业能力，并在其他 CFO 场景中复用。</div>
-<p class="footnote">内容按本次 2026-11-03 的 CFO 图结构研究讨论整理。有关已有论文的覆盖范围为研究定位梳理；有关内部代码的状态来自此前阅读审计笔记，尚需以实际源码和运行证据重新确认。阅读前篇：<a href="11-cfo-benchmark-research-story.html">CFO 论文精读与研究叙事方案</a>。</p>
-</article><footer>学习博客 · 2026-11-03 · CFOGraph Research Map</footer></main></div></body></html>
+<p class="question">真正值得追问：我们手上有很多节点，但哪些<strong>跨节点边</strong>已经有代码实际执行和独立实验？哪些仍然停留在“存在对应模块”？</p>
+<h2 id="story">七、一个可能 strong 的叙事，但必须先经受前人反例</h2>
+<div class="callout"><strong>候选研究主张：</strong>现有企业 Agent Benchmark 已能用约束生成任务、验证器，控制任务复杂度并进行模型评测。但对<strong>业务决策真正必要的专业判断</strong>，我们仍需验证能否在生成、独立评分和实证归因之间建立严谨的跨模块对应，并证明它增加了对模型能力边界的辨识度。</div>
+<p>如果论文最后只是把 simeco 接到 CFO 状态机，再生成 Oracle 和 Rubric，这属于有价值的工程集成，较难应对 Anchor 与 FinCUABuild 的强竞争。如果它进一步做到每个“决策关键考点”有合法受控干预、独立财务复算、可靠评分与跨模型配对实验，才可能形成新方法和新发现。</p>
+<p>在论文结果出来之前，不能承诺“新难度必然比 DAG 节点数更能预测失败”。应以实验检验这一假设。如果发现增加状态链长度也会导致严重失败，同样需要诚实报告并分析原因。</p>
+<h2 id="validation">八、最小可证伪实验：怎么确定我们真补上了一条强边？</h2>
+<ol>
+<li><strong>选同一原始 CFO 业务世界：</strong>先用付款预检，恢复业务事实、关键判断、可见材料、评分证据和状态机调用。</li>
+<li><strong>造匹配对照：</strong>对比重复月份/文件长度增加与真正影响付款结论的审批、现金、重复付款约束干预。</li>
+<li><strong>独立重算：</strong>在生成器之外用规则和账务材料验证正确结论，记录哪些变量改变、哪些不应改变。</li>
+<li><strong>验证评分效度：</strong>对每条关键判断查 Rubric/Verifier 是否覆盖；用合法替代解、明确错误解和人工样本复核检验误判。</li>
+<li><strong>真实模型实验：</strong>固定工具、预算、模型版本，多次运行基础题/变体；报告配对成功率、关键决策错误率和方差。</li>
+<li><strong>跨场景迁移：</strong>将同一个协议用于月末关账或税务场景；只有跨任务族仍能解释模型差异，才支持通用性主张。</li></ol>
+<h2 id="papers">九、要逐篇精读的原论文入口</h2><p>下面不是“推荐参考书目”式罗列，而是每篇必须为至少一条研究边提供机制与实验证据的候选文献。</p><div class="paperlinks"><a href="https://arxiv.org/abs/2609.32835" target="_blank" rel="noopener">FinancialAuditBench · 原文 ↗</a><a href="https://arxiv.org/abs/2605.26321" target="_blank" rel="noopener">Anchor · 原文 ↗</a><a href="https://arxiv.org/abs/2609.07603" target="_blank" rel="noopener">FinCUABuild · 原文 ↗</a><a href="https://proceedings.iclr.cc/paper_files/paper/2024/hash/4ea4a1ea4d9ff273688c8e92bd087112-Abstract-Conference.html" target="_blank" rel="noopener">DyVal · 原文 ↗</a><a href="https://arxiv.org/abs/2605.28556" target="_blank" rel="noopener">TASTE · 原文 ↗</a><a href="https://aclanthology.org/2026.acl-long.1224/" target="_blank" rel="noopener">SGVEF-LOOP · 原文 ↗</a><a href="https://arxiv.org/abs/2609.04706" target="_blank" rel="noopener">FinalityBench · 原文 ↗</a><a href="https://arxiv.org/abs/2607.08093" target="_blank" rel="noopener">CausalDS · 原文 ↗</a><a href="https://arxiv.org/abs/2610.28679" target="_blank" rel="noopener">VerifierBench · 原文 ↗</a><a href="https://proceedings.mlr.press/v306/suh26a.html" target="_blank" rel="noopener">AgentSuite / COBA · 原文 ↗</a><a href="https://arxiv.org/abs/2610.20099" target="_blank" rel="noopener">EvalBuilder · 原文 ↗</a><a href="https://arxiv.org/abs/2603.20807" target="_blank" rel="noopener">BenchBench · 原文 ↗</a><a href="https://arxiv.org/abs/2607.27189" target="_blank" rel="noopener">APEX-Accounting · 原文 ↗</a><a href="https://arxiv.org/abs/2606.22000" target="_blank" rel="noopener">CFAgentBench · 原文 ↗</a><a href="https://arxiv.org/abs/2607.22368" target="_blank" rel="noopener">Protocol Validity · 原文 ↗</a><a href="https://arxiv.org/abs/2607.19409" target="_blank" rel="noopener">FORCE-Bench · 原文 ↗</a></div>
+<p class="muted">完整 CC 研究任务还应继续检索业务流程挖掘、约束验证、变形测试、任务难度预测、能力效度等邻近研究；上面的链接是起点，不是封闭的文献全集。</p>
+<h2 id="oral">十、可以直接给老师讲的口述</h2><blockquote><p>我把 CFO 的研究问题重新改成一张“已有论文贡献关系图”来梳理：节点是已有方法中的具体技术能力，例如真实业务数据、可执行环境、任务生成、难度控制、Oracle、Verifier、模型实测和能力归因；每条边必须由某篇论文的实际方法和实验支持。</p><p>这样梳理后发现，单纯把任务生成、约束和验证器串起来，Anchor 已经做过；从图结构控制难度，DyVal 已有先例；工具序列覆盖和难度反馈，TASTE 与 SGVEF-LOOP 也已有很强结果；金融的反事实与经济后果评分，FinalityBench 也走得比较深入。</p><p>所以我现在不想把“模块拼在一起”当作创新，而是追一个更具体的连接：企业财务业务中真正改变决策的约束，能否在任务生成、独立评分和模型错误归因中保持一一对应？我们现有的 simeco、CFO 状态机、DAG 和 Rubric 提供了部分基础，但这些边目前没有充分的实证证据。</p><p>下一步先拿付款预检做最小研究实验：对相同业务世界分别增加无关材料、重复任务结构和真正改变审批结果的条件，用独立财务复算保证正确答案，再用多模型的配对测试和专家复核检查哪些条件真的造成能力失败、旧评分哪里漏测。随后用月末关账验证能否跨任务复用。</p><p>如果实验成立，论文贡献将是从已有研究图谱中的一个真实断点出发，提出可验证的专业能力评测连接，并证明它比只靠结构规模更能解释模型的失败。</p></blockquote><p class="foot">研究证据说明：本页关于公开论文的描述以已核对的官方论文页和论文方法摘要为依据；“候选缺边”并非已证明的全领域空白；CFO 工程状态来自此前上传的审计笔记，需进一步独立代码核查。上一篇文章：<a href="11-cfo-benchmark-research-story.html">CFO 论文精读与研究叙事</a>。</p></article><footer>学习博客 · 2026-11-03 · Research Contribution Graph</footer></main></div></body></html>
