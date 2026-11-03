@@ -1,0 +1,77 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>CFO Research Contribution Graph：从已有论文的连边寻找研究空白｜学习博客</title><meta name="description" content="将已有论文贡献抽象成节点与已验证的技术连接，叠加 CFO 现有资产，寻找真正可验证的研究空白。"><link rel="stylesheet" href="styles.css">
+<style>
+.article h1{font-size:40px;margin:0 0 14px}.article h2{scroll-margin-top:24px}.article h3{font-size:20px;line-height:1.5;margin:30px 0 9px;color:#2f5d50}.article p{margin:12px 0 17px;line-height:1.93}.article a{color:#2d6754;text-decoration:underline;text-underline-offset:3px}.article ul,.article ol{padding-left:23px;line-height:1.9}.article li{margin:8px 0}.article table{border-collapse:collapse;width:100%;font-size:14px;line-height:1.8;margin:20px 0}.article th,.article td{border-bottom:1px solid #e1e6df;padding:12px;vertical-align:top;text-align:left}.article th{background:#edf4ee;color:#285445}.article pre{font-size:13px;line-height:1.7;background:#20352f;color:#ecf4ef;padding:22px;border-radius:14px;overflow-x:auto}.article code{font-size:.9em;border-radius:4px;background:#f1f3ef;padding:2px 5px}.article pre code{background:none;color:inherit;padding:0}.article blockquote{border-left:3px solid #8cab99;background:#f6faf7;margin:20px 0;padding:6px 20px}.article .lead{font-size:19px;color:#354d41;line-height:1.9}.article .eyebrow{font-size:12px;color:#54786a;letter-spacing:.11em;text-transform:uppercase;font-weight:750;margin-bottom:10px}.article .callout{border:1px solid #cfe3d6;background:#eff8f1;border-radius:13px;padding:22px 24px;margin:23px 0;line-height:1.9}.article .caution{border:1px solid #e9d8ac;background:#fdf7e8;border-radius:12px;padding:18px 21px;margin:20px 0}.article .toc{border:1px solid #dce7dc;background:#f8faf7;border-radius:12px;padding:20px 22px;margin:25px 0}.article .toc a{display:block;padding:5px 0;font-size:14px;text-decoration:none}.article .toc a:hover{text-decoration:underline}.article .chips{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}.article .chip{font-size:12px;padding:4px 10px;border-radius:99px;background:#eaf2ea;color:#32604a;font-weight:700}.article .chip.gold{background:#f9edcf;color:#845e1d}.article .chip.blue{background:#e7effb;color:#355d87}.article .graph{border:1px solid #dde8df;border-radius:16px;padding:21px 22px;margin:20px 0;background:linear-gradient(130deg,#fafcfa,#f4f9f5)}.article .graphline{display:flex;gap:8px;align-items:center;justify-content:center;margin:8px 0;flex-wrap:wrap}.article .node{padding:12px 12px;border-radius:10px;border:1px solid #bed5c7;background:white;font-weight:700;font-size:13px;flex:1;min-width:112px;text-align:center}.article .node.blue{border-color:#bad0e8;background:#ecf3fd;color:#335b86}.article .node.gold{border-color:#e8d49e;background:#fdf4d9;color:#815e22}.article .node.green{border-color:#b8dabc;background:#edf7eb;color:#355d3c}.article .arrow{font-size:22px;color:#7e9c8b}.article .gtitle{font-size:12px;font-weight:800;color:#607d69;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px}.article .gdesc{font-size:13px;color:#6b7b70;margin-top:8px}.article .tablewrap{overflow-x:auto}.article .tablewrap table{min-width:680px}.article .dual{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin:16px 0}.article .dual>div{border:1px solid #e0e8e1;border-radius:12px;padding:18px;background:#fbfcfa}.article .dual h3{margin:0 0 10px;font-size:17px}.article .edge{border-left:4px solid #82ad95;padding:16px 20px;margin:15px 0;background:#f6faf7;border-radius:0 11px 11px 0}.article .edge h3{margin:0 0 7px;font-size:17px}.article .edge p{margin:0;font-size:15px}.article .label{display:inline-block;color:#536f60;background:#e5efe8;padding:3px 10px;border-radius:9px;font-size:12px;font-weight:700}.article .section-note{font-size:13px;color:#748077}.article .rule{border-top:1px solid #e4e8e3;margin:30px 0}
+@media(max-width:740px){.article h1{font-size:30px}.article .graphline{flex-direction:column}.article .node{width:100%}.article .arrow{transform:rotate(90deg)}.article .dual{grid-template-columns:1fr}.article table{font-size:12px}.article td,.article th{padding:9px}}
+</style></head><body><div class="shell"><aside class="sidebar"><div class="brand">学习博客</div><div class="brand-sub">从文献贡献图谱找研究空白，再把空白落实成可验证实验。</div><div class="nav-title">本篇目录</div><div class="nav"><a href="index.html">← 返回博客首页</a><a href="#clarify">01 · 研究图和内容图的区别</a><a href="#nodes">02 · 技术贡献节点</a><a href="#papers">03 · 论文已经连接的边</a><a href="#missing">04 · 候选缺失连接</a><a href="#ours">05 · 我们已有的资产</a><a href="#criteria">06 · Strong Paper 标准</a><a href="#matrices">07 · 三张分析矩阵</a><a href="#narrative">08 · 最终故事与下一步</a></div></aside>
+<main class="main"><a class="back" href="index.html">← 返回首页</a><article class="article"><div class="eyebrow">13 · Research Contribution Graph / CFO · 2026-11-03</div><h1>从论文技术节点与已验证连边，寻找 CFO 的真正研究空白</h1><p class="lead">这篇讨论的<strong>图</strong>，是整个研究领域的“技术贡献关系图”，用来判断谁做过什么、哪些能力已经连接、哪些连接还有价值，而不是我们 CFO 方法内部的业务因果 DAG。</p>
+<div class="callout"><strong>核心目标：</strong>将已有论文实实在在完成的技术贡献抽象成节点，将各论文经过方法或实验验证的关系画成边，再把所有论文叠加为一张研究图谱。最后把 CFO 工厂已有模块映射进去，寻找<strong>缺边 × 已有资产 × 可验证的新研究命题</strong>。<br><strong>判断标准：</strong>“把模块接上了”主要是工程贡献；“接上后能回答以前无法可靠回答的问题，并由独立实验验证”才有希望成为强论文。</div>
+<nav class="toc"><strong>阅读路线</strong><a href="#clarify">一、上一版理解偏在哪里</a><a href="#nodes">二、已有研究的八类技术节点</a><a href="#papers">三、每篇论文真正连接了哪些节点</a><a href="#missing">四、叠加后应该怎样寻找缺边</a><a href="#ours">五、将 CFO 现有资产映射到缺边</a><a href="#criteria">六、缺边满足什么条件才有 Strong Contribution</a><a href="#matrices">七、真正应该做的三张矩阵</a><a href="#narrative">八、研究叙事、审计要求和下一步</a></nav>
+<h2 id="clarify">一、先纠正：研究贡献关系图和方法内部图完全不同</h2>
+<div class="dual"><div><span class="label">之前画错的图</span><h3>方法内部结构图</h3><p>业务因果图 → 决策依赖图 → 证据评分图。</p><p>它回答的是“我们准备设计什么方法、方法里有哪些模块”。只有先确定研究缺口，它才知道是否值得提出。</p></div><div><span class="label">这次真正要画的图</span><h3>Research Contribution Graph</h3><p>论文 A 做过哪些节点 → 论文 B 连通了哪段链 → 各论文叠加后哪些重要连接仍缺证据 → CFO 已有哪些基础可以把它们连起来。</p><p>它回答的是“为什么这里有值得研究的空白”。</p></div></div>
+<p>研究过程中应先画<strong>文献贡献图</strong>、寻找候选缺边、验证缺边确实存在且重要，然后才提出 CFO 的具体方法架构。这能避免先有方案，再强行把论文塞进去作背书。</p>
+<h2 id="nodes">二、把已有论文贡献抽象成八个技术节点</h2>
+<div class="graph"><div class="gtitle">技术节点图谱 / 初步抽象</div>
+<div class="graphline"><div class="node blue">A · 真实业务数据与规则</div><span class="arrow">→</span><div class="node blue">B · 可执行环境与状态</div><span class="arrow">→</span><div class="node blue">C · 自动生成任务</div></div>
+<div class="graphline"><div class="node gold">D · 难度和能力考点控制</div><span class="arrow">→</span><div class="node green">F · Agent 真实运行</div><span class="arrow">→</span><div class="node green">G · 能力失败归因</div></div>
+<div class="graphline"><div class="node blue">C · 任务生成</div><span class="arrow">→</span><div class="node blue">E · Oracle 与独立验证</div><span class="arrow">→</span><div class="node green">F · Agent 运行</div></div>
+<div class="graphline"><div class="node green">G · 失败归因</div><span class="arrow">→</span><div class="node gold">H · 基于反馈优化任务</div><span class="arrow">→</span><div class="node gold">D · 考点与难度</div></div>
+<div class="gdesc">上图是待逐篇证明的候选技术关系，不应将画出的每条箭头当作已经被某篇论文实现。</div></div>
+<p>这里的“节点”应抽象到跨论文可比较的技术能力层级。不能把每篇文章独有的变量名都作为一个节点，否则根本找不到可以比较的共同结构；也不能过于抽象，只剩“训练、评测、数据”三个词，那样无法找到真正的缺失连接。</p>
+<p>建议每个节点维护统一定义、输入、输出、成功标准、代表论文和我们是否具备对应工程。每一条边则必须指出：哪篇文章以什么方法将两个节点连接、是否执行了完整代码链、哪些实验说明连接确实有效。</p>
+
+<h2 id="papers">三、已有论文真正连接了哪些边？</h2>
+<div class="tablewrap"><table><thead><tr><th>论文</th><th>它已研究/验证的主要连接</th><th>仍值得追问什么</th></tr></thead><tbody>
+<tr><td>DyVal</td><td><strong>C → D → F</strong>：根据图结构生成不同复杂度任务，实测模型结果</td><td>结构复杂度能否对应真实 CFO 专业难度？</td></tr>
+<tr><td><a href="https://arxiv.org/abs/2605.26321" target="_blank" rel="noopener noreferrer">Anchor</a></td><td><strong>B → C → D/E → F</strong>：统一业务约束生成环境、任务、求解器与验证器，并测量难度</td><td>能否定位模型具体在哪种专业业务依赖上失败？</td></tr>
+<tr><td><a href="https://arxiv.org/abs/2609.07603" target="_blank" rel="noopener noreferrer">FinCUABuild</a></td><td><strong>C → B/E → F</strong>：自动生成金融任务、环境和验证器，执行质量检查</td><td>产题的专业考点能否与可解释失败建立对应？</td></tr>
+<tr><td><a href="https://arxiv.org/abs/2609.04706" target="_blank" rel="noopener noreferrer">FinalityBench</a></td><td><strong>A/B → D/E → F/G</strong>：支付状态、反事实配对、经济后果和行为分析</td><td>能否扩展到跨期会计、审批和关账等多类 CFO 工作流？</td></tr>
+<tr><td>SGVEF-LOOP</td><td><strong>C/D → E → F → H</strong>：图覆盖、变形测试、约束检查、执行反馈迭代</td><td>复杂财务业务规则下是否仍有可靠的控制与证据？</td></tr>
+<tr><td>TASTE</td><td><strong>C/D → F → H</strong>：任务结构覆盖和评测反馈驱动的测试生成</td><td>反馈是否能指向可复用的业务能力机制？</td></tr>
+<tr><td>CausalDS</td><td><strong>A/D → C → F</strong>：通过结构因果机制生成观测及因果任务</td><td>与企业财务执行和独立账务核验的连接如何？</td></tr>
+</tbody></table></div>
+<div class="caution"><strong>证据边界：</strong>这是一份基于之前文献讨论的研究图谱初稿，尚未逐篇重新审计全部论文代码、消融和复现实验。表中“覆盖”应进一步标注为 Declared / Implemented / Experimentally Validated；某篇论文未报告一条边，不等于全领域不存在那条边。</div>
+<p>这张表最关键的作用是防止虚假创新性：我们不能说“首次图结构控制难度”“首次业务约束和 Verifier 联合生成”“首次反事实金融任务对”“首次基于 Agent 实测反馈迭代生成”，因为这些机制已经存在对应先例。</p>
+<h2 id="missing">四、叠加已有论文后，如何寻找真正的缺边？</h2>
+<p>先把每篇论文连通的技术节点合并到同一张图。接着找出这些候选关系：</p>
+<div class="edge"><h3>候选缺边 1：真实业务依赖 → 可控的专业考点</h3><p>业务状态生成器有真实财务规则，难度生成器有 DAG、分支和陷阱；但结构复杂度是否真正对应必须完成的专业决策，尚需建立映射并实测验证。</p></div>
+<div class="edge"><h3>候选缺边 2：专业考点 → 可观测、可信的评分证据</h3><p>一个被标记为“高难”的审批/资金约束，是否真的在 Oracle、Rubric 和执行状态中拥有独立判据？若缺少这一关系，模型绕过关键约束仍可能得分很高。</p></div>
+<div class="edge"><h3>候选缺边 3：受控业务变化 → 可解释的失败 → 反馈产题</h3><p>如果改变一个真正重要的业务条件，正确结果应按规则变化；Agent 失败后，系统能否识别具体能力断点，并据此生成新的针对性任务，而不是只按照得分高低随机增难？</p></div>
+<p>注意，这三条只是<strong>候选研究缺口</strong>，要继续和 Anchor、FinalityBench、TASTE、SGVEF-LOOP 等逐边对照。新的工作需要证明它连接的关系具有已有方法未充分覆盖的深度、适用范围或测量效度。</p>
+<h2 id="ours">五、把我们已经拥有的 CFO 资产叠进去</h2>
+<div class="tablewrap"><table><thead><tr><th>CFO 已有资产</th><th>对应技术节点</th><th>需要补的有效连接</th></tr></thead><tbody>
+<tr><td>simeco 逐笔业务合成</td><td>A、B</td><td>与当前 CFO 场景、跨期规则和任务生成接通，独立检验真实性</td></tr>
+<tr><td>fin_cfo 状态机、DAG、Task Factory</td><td>C、D</td><td>区分有效专业判断、关键依赖与仅由模板重复产生的节点</td></tr>
+<tr><td>Golden、Rubric、Verifier</td><td>E</td><td>证明评分覆盖关键业务判断，对每项要求提供证据支持</td></tr>
+<tr><td>已有任务执行 Harness</td><td>F</td><td>形成该批 CFO 专项任务可复现的模型试验结果</td></tr>
+<tr><td>Weakness、陷阱和错误归因思路</td><td>D、G、H 的部分基础</td><td>检验目标考点与观察到的模型失败能否一一对应，并支持定向再产题</td></tr>
+</tbody></table></div>
+<p>从现有资产出发，最有希望形成可复用研究链的是：</p>
+<div class="graph"><div class="gtitle">候选研究主链 / 尚待实证</div>
+<div class="graphline"><div class="node blue">真实企业财务状态</div><span class="arrow">→</span><div class="node gold">可控专业难点生成</div><span class="arrow">→</span><div class="node blue">可信评测</div></div>
+<div class="graphline"><div class="node green">实证能力失败归因</div><span class="arrow">→</span><div class="node gold">反向指导下一批任务</div></div>
+<div class="gdesc">主链不是已有系统完成度声明；每一条跨节点关系都需要代码追溯、运行记录和匹配对照支持。</div></div>
+<p>这条链的潜在价值在于，它让自动产题从“按配置合成更多题”发展到“根据可验证的业务能力断点，生成能针对性测量该断点的下一批任务”。但<strong>闭环本身并非新颖性的保证</strong>，必须用已有论文做逐边排除。</p>
+
+<h2 id="criteria">六、什么样的缺边能支撑 Strong Paper？</h2>
+<p>判断一个候选缺边的研究价值，至少问以下五件事：</p>
+<ol>
+<li><strong>Novelty：</strong>是否有论文已经完成了这条连接？只做了局部验证还是完成了完整实验？</li>
+<li><strong>Mechanism：</strong>连接后产生了什么以前无法实现或无法验证的能力？具体输入、变换规则和输出是什么？</li>
+<li><strong>Evidence：</strong>如何证明这条边确实工作？独立 Oracle、专家审查、代码与真实模型实验分别承担什么作用？</li>
+<li><strong>Ablation：</strong>删除这条边后会怎样？与 Anchor、DyVal、SGVEF-LOOP 等方法的差异能否用匹配对照解释？</li>
+<li><strong>Generalization：</strong>这一关系在新企业、新规则、不同 CFO 任务族和其他模型上还成立吗？</li>
+</ol>
+<p>尤其需要避免把两件事情混在一起：<strong>有一套运行成功的系统</strong>，和<strong>发现了一种可复现的新能力机制</strong>。前者是很重要的工程前提；后者决定研究结论是否有超越当前场景的意义。</p>
+<h2 id="matrices">七、应该交付的三张矩阵</h2>
+<h3>矩阵一：Paper × Technical Node</h3>
+<p>每行一篇论文，每列一个技术节点。格子里不能只写“涉及”，要记录论文中实际实现的模块、产物和实验。标注 Declared、Implemented、Experimentally Validated 等证据层级。</p>
+<h3>矩阵二：Paper × Verified Edge</h3>
+<p>例如 DyVal 的 C→D 如何实现，D→F 用什么模型和指标验证；Anchor 的统一约束怎样跨越任务、环境和 Oracle；SGVEF-LOOP 的反馈是否真正影响下一轮产题。还要记录边的适用任务域和局限。</p>
+<h3>矩阵三：Missing Edge × CFO Asset × Research Value</h3>
+<p>对每条候选缺边填写：已有论文是否覆盖、我们哪段代码能支撑、需要补什么接口与数据、最小实验如何检验、失败风险是什么，以及如果结果成立能贡献什么新的认识。</p>
+<p>这些矩阵最后应筛选出<strong>一条最强主链</strong>，论文围绕这条链叙事；其他相关模块作为必要基础、实验工具或局限说明。</p>
+<h2 id="narrative">八、据此确定研究故事与下一步</h2>
+<blockquote><p>我们把 CFO 相关研究按技术贡献而非论文标题重新组织。已有研究已经分别连接了真实业务环境、自动任务生成、图结构难度控制、独立 Verifier、Agent 运行、反事实评分和执行反馈；其中部分论文已经实现了很完整的闭环。</p><p>因此我们不会笼统声称首次打通这些模块，而会逐边确认哪些连接已经得到证明、哪些仍存在可验证的空白。</p><p>结合我们现有的 simeco、CFO 状态机和 DAG、Golden、Rubric、Verifier、Weakness 和模型评测资产，目前最值得继续研究的是：真实财务业务约束能否稳定映射到决策关键的专业考点，评分器能否准确验证这些考点，以及模型失败能否通过受控变化被归因并反向指导任务生成。</p><p>如果在多个 CFO 场景中，这条链能证明比常规结构指标和普通 Rubric 更准确地识别能力缺陷，那么可以形成一条有方法和实证证据的论文主线。</p></blockquote>
+<div class="callout"><strong>最直接的下一步：</strong>先完成已有论文的“节点—已验证边”两张矩阵；再对照 CFO 代码和实际证据，筛选 1–2 条候选缺边，优先用 R16 付款预检、R6 月末关账做匹配对照和独立评分实验。<strong>先证明缺边，后确定论文方法与标题。</strong></div>
+<p class="section-note">本页整理了本次对话中对“研究贡献关系图”的澄清。它与第 12 篇讨论的三张业务方法图不同；第 12 篇可作为候选方法设计材料，而本文专门用于从文献谱系寻找可检验的研究空白。<a href="12-cfo-graph-research-map.html">阅读第 12 篇</a>。</p>
+</article><footer>学习博客 · CFO Research Contribution Graph · 2026-11-03</footer></main></div></body></html>
