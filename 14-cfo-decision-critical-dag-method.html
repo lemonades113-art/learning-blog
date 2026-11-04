@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CFO-WorkBench 方法贡献怎么成立：从决策关键依赖 DAG 到可复现的专业能力测量｜学习博客</title>
+<meta name="description" content="把 CFO-WorkBench 的候选研究贡献拆成可实施方法、DAG 数据合同、任务变体传播、Claim 级评分和匹配实验；区分已有实现、待补工程与必须由实验验证的研究主张。">
+<link rel="stylesheet" href="styles.css">
+<style>
+.article h1{font-size:39px;line-height:1.25;margin:0 0 14px}.article h2{scroll-margin-top:24px;margin-top:42px}.article h3{font-size:19px;line-height:1.5;margin:27px 0 9px;color:#2f5d50}.article p{margin:12px 0 17px;line-height:1.95}.article a{color:#2d6754;text-decoration:underline;text-underline-offset:3px}.article ul,.article ol{padding-left:24px;line-height:1.9}.article li{margin:7px 0}.article table{border-collapse:collapse;width:100%;font-size:13px;line-height:1.8;margin:18px 0}.article th,.article td{border-bottom:1px solid #e1e6df;padding:11px;vertical-align:top;text-align:left}.article th{background:#edf4ee;color:#285445}.article code{font-size:.9em;border-radius:4px;background:#f1f3ef;padding:2px 5px}.article pre{font-size:12px;line-height:1.7;background:#20352f;color:#ecf4ef;padding:20px;border-radius:13px;overflow-x:auto}.article pre code{background:none;color:inherit;padding:0}.article blockquote{border-left:3px solid #8cab99;background:#f6faf7;margin:20px 0;padding:7px 20px}.article .lead{font-size:18px;color:#354d41;line-height:1.95}.article .eyebrow{font-size:12px;color:#54786a;letter-spacing:.11em;text-transform:uppercase;font-weight:750;margin-bottom:10px}.article .callout{border:1px solid #cfe3d6;background:#eff8f1;border-radius:13px;padding:21px 23px;margin:22px 0;line-height:1.95}.article .caution{border:1px solid #e9d8ac;background:#fdf7e8;border-radius:12px;padding:17px 20px;margin:19px 0;line-height:1.9}.article .toc{border:1px solid #dce7dc;background:#f8faf7;border-radius:12px;padding:19px 22px;margin:24px 0}.article .toc a{display:block;padding:5px 0;font-size:14px;text-decoration:none}.article .toc a:hover{text-decoration:underline}.article .chips{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}.article .chip{font-size:12px;padding:4px 10px;border-radius:99px;background:#eaf2ea;color:#32604a;font-weight:700}.article .chip.gold{background:#f9edcf;color:#845e1d}.article .chip.blue{background:#e7effb;color:#355d87}.article .graph{border:1px solid #dde8df;border-radius:15px;padding:20px;margin:20px 0;background:linear-gradient(130deg,#fafcfa,#f4f9f5)}.article .graphline{display:flex;gap:8px;align-items:stretch;justify-content:center;margin:9px 0;flex-wrap:wrap}.article .node{padding:12px;border-radius:10px;border:1px solid #bed5c7;background:white;font-weight:700;font-size:13px;flex:1;min-width:115px;text-align:center}.article .node.blue{border-color:#bad0e8;background:#ecf3fd;color:#335b86}.article .node.gold{border-color:#e8d49e;background:#fdf4d9;color:#815e22}.article .node.green{border-color:#b8dabc;background:#edf7eb;color:#355d3c}.article .arrow{font-size:21px;color:#7e9c8b;align-self:center}.article .gtitle{font-size:12px;font-weight:800;color:#607d69;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px}.article .gdesc{font-size:13px;color:#6b7b70;margin-top:8px}.article .tablewrap{overflow-x:auto}.article .tablewrap table{min-width:720px}.article .dual{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}.article .dual>div{border:1px solid #e0e8e1;border-radius:12px;padding:17px;background:#fbfcfa}.article .dual h3{margin:0 0 9px;font-size:17px}.article .edge{border-left:4px solid #82ad95;padding:15px 19px;margin:14px 0;background:#f6faf7;border-radius:0 11px 11px 0}.article .edge h3{margin:0 0 7px;font-size:17px}.article .edge p{margin:0;font-size:14px}.article .label{display:inline-block;color:#536f60;background:#e5efe8;padding:3px 10px;border-radius:9px;font-size:12px;font-weight:700}.article .section-note{font-size:13px;color:#748077}.article .rule{border-top:1px solid #e4e8e3;margin:28px 0}.article .formula{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#f4f7f3;border:1px solid #dfe8df;border-radius:10px;padding:14px 16px;overflow-x:auto;font-size:13px;line-height:1.8}.article .status{font-size:11px;font-weight:800;letter-spacing:.03em;padding:3px 8px;border-radius:7px;display:inline-block}.article .status.now{background:#e5f2e8;color:#2d6940}.article .status.partial{background:#fff2d6;color:#815e22}.article .status.future{background:#e9effa;color:#355d87}
+@media(max-width:740px){.article h1{font-size:29px}.article .graphline{flex-direction:column}.article .node{width:100%}.article .arrow{transform:rotate(90deg)}.article .dual{grid-template-columns:1fr}.article table{font-size:12px}.article td,.article th{padding:8px}}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar">
+<div class="brand">学习博客</div>
+<div class="brand-sub">把研究主张变成能实现、能测量、能被反驳的方法。</div>
+<div class="nav-title">本篇目录</div>
+<div class="nav">
+<a href="index.html">← 返回博客首页</a>
+<a href="#answer">01 · 先判断这算不算贡献</a>
+<a href="#object">02 · 研究对象与测量单位</a>
+<a href="#dag">03 · 决策关键依赖 DAG</a>
+<a href="#contract">04 · DAG 如何接到材料、Golden 与 Claim</a>
+<a href="#example">05 · CIT / PAY / PCK 具体例子</a>
+<a href="#experiment">06 · 匹配实验怎么做</a>
+<a href="#validity">07 · 评分有效性与复现</a>
+<a href="#related">08 · 与最近邻论文逐项区分</a>
+<a href="#medical">09 · 医学三篇怎样迁移</a>
+<a href="#plan">10 · 最小实施路线与验收标准</a>
+<a href="#claim">11 · 最终怎样写研究贡献</a>
+</div>
+</aside>
+<main class="main">
+<a class="back" href="index.html">← 返回首页</a>
+<article class="article">
+<div class="eyebrow">14 · CFO-WorkBench / Research Design · 2026-11-04</div>
+<h1>把候选研究贡献做实：从决策关键依赖 DAG 到可复现的专业能力测量</h1>
+<p class="lead">第 11 篇讲 CFO 论文故事，第 12 篇讲研究结构与图，第 13 篇讲别人已经连接了什么。本文继续往下走：把“关键专业条件 → DAG → 工作产物字段 → 评分 Claim → 匹配实验”落实成一套可以执行、可以验收、也允许实验失败的方法方案。</p>
+<div class="callout"><strong>先给结论：</strong>“在日常企业财务工作中，把真正影响业务结论的关键专业条件组织成 DAG，映射到工作产物字段和评分 Claim，再通过匹配实验验证专业能力差异”是一条<strong>有潜力的候选方法贡献</strong>，目前还不是已经成立的研究贡献。DAG、约束生成、金融任务、Oracle、Rubric、反事实测试分别都有强先例。CFO 真正需要证明的是：这些对象之间是否形成了一个可追溯、可干预、能传播、能独立复算、能由实验检验的专业依赖协议。</div>
+<div class="chips"><span class="chip">研究对象：企业财务工作产物</span><span class="chip blue">方法候选：决策关键依赖 DAG</span><span class="chip gold">证据要求：匹配实验 + 专家复核</span></div>
+<nav class="toc"><strong>阅读路线</strong>
+<a href="#answer">一、这句话到底算不算研究贡献？</a>
+<a href="#object">二、先确定我们究竟测量什么</a>
+<a href="#dag">三、DAG 必须表达什么，不能表达什么</a>
+<a href="#contract">四、怎样把 DAG 接到任务、材料、Golden、Claim</a>
+<a href="#example">五、用现有 CIT / PAY / PCK 资产讲清楚</a>
+<a href="#experiment">六、怎样设计真正有解释力的匹配实验</a>
+<a href="#validity">七、评分有效性和复现证据</a>
+<a href="#related">八、与最强近邻论文的差异边界</a>
+<a href="#medical">九、医学论文的三种方法如何迁移</a>
+<a href="#plan">十、从现有状态到最小可跑实验</a>
+<a href="#claim">十一、可以给老师和论文使用的贡献表述</a>
+</nav>
+
+<h2 id="answer">一、先判断：这句话到底算不算研究贡献？</h2>
+<p>先把“做了什么”和“贡献了什么”分开。使用 DAG 是一种表达方式；将材料和答案放到一起是工程集成；把 Claim 写得更细是评分设计；运行配对实验是研究验证。任何一个动作单独出现，都不足以支撑强创新性。真正有研究价值的地方，是能否提出一种此前没有被充分解决、且能通过独立证据验证的机制。</p>
+<div class="tablewrap"><table><thead><tr><th>原句中的内容</th><th>它属于什么</th><th>已有研究先例</th><th>单独能否构成创新</th></tr></thead><tbody>
+<tr><td>用 DAG 表示专业依赖</td><td>图结构 / 方法表示</td><td>DyVal、Anchor、ProFinR、MedPRMBench 等</td><td>不能仅凭使用 DAG</td></tr>
+<tr><td>改变影响业务结论的条件</td><td>受控干预 / 任务变体</td><td>Anchor、CausalDS、FinalityBench 等</td><td>需要说明财务条件与传播机制的独特性</td></tr>
+<tr><td>映射到工作产物字段</td><td>任务语义与结果对齐</td><td>财务工作 Benchmark、ERP 任务和 Verifier 已有相关工作</td><td>需要形成严格可追溯合同</td></tr>
+<tr><td>映射到评分 Claim</td><td>测量与验证机制</td><td>APEX、ClinConsensus、VerifierBench 等</td><td>需要证明关键错误能被准确识别</td></tr>
+<tr><td>做匹配任务实验</td><td>实证验证</td><td>多个 Benchmark 已有配对、消融或难度实验</td><td>实验是必要证据，实验设计本身不自动等于创新</td></tr>
+</tbody></table></div>
+<p>因此，最有潜力的主张是：<strong>把企业财务的决策关键依赖变成可控的任务干预对象，并保证干预在业务材料、独立 Golden 和 Claim 级评分之间保持一致，再验证它是否比单纯增加任务规模更能解释模型的专业错误。</strong></p>
+<div class="dual">
+<div><span class="label">现在可以说</span><h3>候选研究命题</h3><p>我们提出一个待验证的依赖驱动构题与测量方案，并设计实验检验其有效性。</p></div>
+<div><span class="label">实验成功后才可以说</span><h3>实证方法贡献</h3><p>我们实现并验证了该方法，证明其在特定 CFO 任务范围内带来更可解释的专业能力区分。</p></div>
+</div>
+<p>这也意味着论文贡献需要分成三层：C1 定义专业工作产物的测量单位；C2 提出并实现决策关键依赖驱动的任务变体方法；C3 用模型实验和专家复核证明测量结果可信。当前最应该争取的是 C2，C1 提供研究对象，C3 提供方法成立的证据。</p>
+
+<h2 id="object">二、先确定我们究竟测量什么：可见证据、必要判断、工作产物</h2>
+<p>论文的测量单位不能只写成“一道财务题”。一道题里可能有几十份材料、多个判断和大量输出字段，但真正决定模型是否完成工作的，是材料是否支持必要判断，以及这些判断是否正确落实到了交付结果。</p>
+<div class="graph">
+<div class="gtitle">CFO 的基本测量单位</div>
+<div class="graphline"><div class="node blue">可见业务证据<br><small>合同 / 制度 / 单据 / 账簿</small></div><span class="arrow">→</span><div class="node gold">必要专业判断<br><small>主体 / 期间 / 规则 / 勾稽 / 控制</small></div><span class="arrow">→</span><div class="node green">可观察工作产物<br><small>金额 / 分类 / 状态 / 决定 / 报告</small></div></div>
+<div class="gdesc">Claim 是对工作产物中某个可观察结果的结构化判定，不是对模型隐藏思维过程的直接读取。</div>
+</div>
+<p>这条链决定了 CFO 的研究边界：模型需要从考生可见材料中识别证据，完成必要的财务判断，并交付可以检查的结果。当前论文不声称读取模型内部真实推理，也不声称真实 ERP 已经执行付款、记账或申报。</p>
+<h3>2.1 五类专业判断如何成为能力分类</h3>
+<div class="tablewrap"><table><thead><tr><th>能力类别</th><th>判断问题</th><th>常见证据</th><th>可观察工作产物</th></tr></thead><tbody>
+<tr><td>主体归属</td><td>谁拥有权利、承担成本或应确认该事项？</td><td>合同、签约人档案、成本承担协议、交接材料</td><td>主体字段、项目归属、成本中心</td></tr>
+<tr><td>期间与规则生效</td><td>哪个期间适用？哪版制度或合同条款生效？</td><td>生效日期、服务期间、验收和交接记录、制度版本</td><td>期间字段、计提月份、适用规则</td></tr>
+<tr><td>条件性专业规则</td><td>满足什么条件时采用哪条计算或处理规则？</td><td>合同条件、阈值、资格、例外条款</td><td>金额、税务分类、确认方式</td></tr>
+<tr><td>跨资料勾稽</td><td>合同、单据、明细、汇总是否一致？</td><td>明细表、账簿、报表、对账单、凭证</td><td>逐行金额、汇总数、差异说明</td></tr>
+<tr><td>财务控制决定</td><td>是否满足审批、权限、付款或其他控制条件？</td><td>审批记录、授权范围、预算、资金状态</td><td>可处理 / 暂停 / 补证 / 升级等决定</td></tr>
+</tbody></table></div>
+<p>这五类是待由最终冻结题集和专家复核验证的能力分类，不代表当前 100 道候选已经均衡覆盖五类能力。最终需要按有效任务和 Claim 统计覆盖，不能拿题族数量替代能力覆盖。</p>
+
+<h2 id="dag">三、DAG 必须表达什么，不能表达什么</h2>
+<p>我们需要的 DAG 是<strong>任务内部的专业依赖图</strong>。它描述完成财务交付所必需的证据、规则、判断、计算、控制和输出之间的依赖关系。它不是第 13 篇里的跨论文 Research Contribution Graph，也不是 Agent 的工具调用规划图，更不自动等于统计意义上的结构因果模型。</p>
+<div class="dual">
+<div><span class="label">本研究的 Task DAG</span><h3>业务判断依赖</h3><p>合同生效日 → 适用期间判断 → 应计月份 → 费用金额 Claim。</p><p>关注：哪项事实改变会影响哪个业务结论和工作产物？</p></div>
+<div><span class="label">ProFinR 等工作的 DAG Planner</span><h3>工具执行规划</h3><p>先取数、再计算、并行查询、汇总结果。</p><p>关注：Agent 应如何组织工具调用和执行顺序？</p></div>
+</div>
+<h3>3.1 推荐的节点类型</h3>
+<div class="tablewrap"><table><thead><tr><th>节点类型</th><th>含义</th><th>必需元数据</th></tr></thead><tbody>
+<tr><td>E · Evidence</td><td>考生可见的业务证据</td><td>文件、页/行/字段、时间、来源、可见权限</td></tr>
+<tr><td>R · Rule / Condition</td><td>适用制度、合同条件、阈值或例外规则</td><td>规则来源、版本、生效区间、触发条件</td></tr>
+<tr><td>J · Judgment</td><td>必须作出的专业判断</td><td>判断问题、允许值、判断依据、错误类型</td></tr>
+<tr><td>K · Computation</td><td>计算、分类、汇总或状态推导</td><td>输入、公式/规则、精度和容差</td></tr>
+<tr><td>G · Gate / Control</td><td>审批、权限、资金或流程约束</td><td>前置条件、拒绝/暂停/升级边界</td></tr>
+<tr><td>O · Output Claim</td><td>工作产物中的可观察字段或结论</td><td>输出位置、预期值、严重程度、评分规则</td></tr>
+</tbody></table></div>
+<h3>3.2 推荐的边类型</h3>
+<ul>
+<li><strong>Evidence supports Rule/Judgment：</strong>哪份材料支持哪项规则或判断。</li>
+<li><strong>Condition activates Rule：</strong>哪个条件触发哪条规则。</li>
+<li><strong>Judgment feeds Computation：</strong>主体、期间等判断如何进入计算。</li>
+<li><strong>Computation maps to Output：</strong>计算结果落在哪个交付字段。</li>
+<li><strong>Gate constrains Decision：</strong>审批或权限条件如何限制处理决定。</li>
+<li><strong>Aggregation：</strong>逐行结果如何汇总成报表、申报或对账结论。</li>
+<li><strong>Temporal dependency：</strong>上一期间事件如何影响下一期间状态。</li>
+</ul>
+<p>跨期任务要给事件和状态加时间标识，例如 J(t)、K(t+1)，避免把动态状态变化误画成无时间标识的静态循环。每个必要判断都应该能追溯到证据；每个关键判断都应该影响至少一个输出 Claim；每个关键 Claim 都应该能回溯到上游判断。没有上游证据、没有下游影响的节点可能只是装饰节点。</p>
+<h3>3.3 什么叫“决策关键依赖”</h3>
+<p>本文建议采用一个可检验的操作性定义：在其他任务条件保持匹配、任务仍然有效且可解的前提下，改变一项必要业务事实或规则条件，会使至少一个正确的专业判断、工作产物字段、金额或处理决定发生预期变化；同时，图中标记的下游依赖能够解释哪些材料、计算和 Claim 必须随之更新。</p>
+<div class="formula">x_i：被干预的业务事实 / 规则条件<br>J(x_i)：受影响的专业判断<br>O(x_i)：受影响的工作产物字段<br>C(x_i)：受影响的评分 Claim<br>决策关键依赖：Δx_i → 预期 ΔJ → 预期 ΔO → 对应 ΔC</div>
+<p>这里的箭头是业务依赖规格，不应仅凭画出 DAG 就宣称发现了因果关系。因果或干预效果需要通过受控变体、独立 Golden、匹配实验和模型运行来验证。DAG 给出“应当影响什么”的先验结构，实验检验“模型是否按预期响应”。</p>
+
+<h2 id="contract">四、怎样把 DAG 接到任务、材料、Golden 和 Claim</h2>
+<p>真正的方法贡献不能停留在画图。需要一份机器可读的数据合同，让同一个决策关键节点可以被任务生成、材料更新、Oracle 复算、Rubric 评分和实验分析共同引用。当前 CFO 的 DAG 主要承担依赖表达、Claim 关联和有效节点质检；Oracle 另行读取考生可见材料计算 Golden。以下是建议补齐的目标合同，不应误写成当前已经全部实现。</p>
+<h3>4.1 一个关键节点至少要记录什么</h3>
+<div class="tablewrap"><table><thead><tr><th>字段</th><th>用途</th><th>示例含义</th></tr></thead><tbody>
+<tr><td>node_id / node_type</td><td>唯一定位节点及类型</td><td>J_PERIOD_01 / Judgment</td></tr>
+<tr><td>source_evidence</td><td>定位考生可见依据</td><td>合同第几条、回执哪一行</td></tr>
+<tr><td>rule_id / rule_version</td><td>明确适用规则及版本</td><td>制度版本、生效区间</td></tr>
+<tr><td>parent_dependencies</td><td>列出必要上游节点</td><td>合同权利 + 生效日期</td></tr>
+<tr><td>downstream_claims</td><td>列出受影响的输出</td><td>期间字段、应计金额</td></tr>
+<tr><td>criticality / severity</td><td>说明业务重要性</td><td>关键错误、普通差异</td></tr>
+<tr><td>intervention_spec</td><td>定义允许如何改变条件</td><td>将生效日期改为另一个合法日期</td></tr>
+<tr><td>expected_delta</td><td>声明哪些判断和字段应变化</td><td>期间和金额变化，主体保持不变</td></tr>
+<tr><td>invariants</td><td>声明哪些内容必须保持不变</td><td>无关项目、格式和审批人不变</td></tr>
+<tr><td>evidence_status</td><td>区分证据状态</td><td>SUPPORTED / UNKNOWN / NOT_APPLICABLE</td></tr>
+</tbody></table></div>
+<h3>4.2 目标运行链：图控制干预，Oracle 独立计算答案</h3>
+<div class="graph">
+<div class="gtitle">建议的端到端方法链</div>
+<div class="graphline"><div class="node blue">基础业务世界<br><small>交易 / 合同 / 制度</small></div><span class="arrow">→</span><div class="node gold">专业依赖 DAG<br><small>证据 / 规则 / 判断 / Claim</small></div></div>
+<div class="graphline"><div class="node gold">受控干预规格<br><small>关键条件 / 结构 / 干扰 / 等价</small></div><span class="arrow">→</span><div class="node blue">材料传播与导出<br><small>更新所有受影响文件</small></div></div>
+<div class="graphline"><div class="node green">独立 Oracle<br><small>重新读取可见材料</small></div><span class="arrow">→</span><div class="node green">Golden + Claim<br><small>参考结果与评分映射</small></div></div>
+<div class="graphline"><div class="node blue">Agent 作答</div><span class="arrow">→</span><div class="node green">Claim 评分与专家复核</div><span class="arrow">→</span><div class="node gold">匹配实验分析</div></div>
+<div class="gdesc">这是目标方法架构。DAG 负责依赖和干预规格；Oracle 负责从考生可见材料独立计算 Golden。不能把 DAG 画成已经统一执行全部 Golden 的求解器。</div>
+</div>
+<h3>4.3 必须保持的四个隔离</h3>
+<ol>
+<li><strong>生成与求解隔离：</strong>生成器可以知道隐藏业务世界，但 Oracle 应重新读取考生可见材料计算答案，不能直接读取生成器隐藏状态当作答案。</li>
+<li><strong>任务与评分隔离：</strong>任务规范声明要完成什么，Claim/Rubric 声明如何判定；不能为了让模型失分而反向修改答案口径。</li>
+<li><strong>训练与测试隔离：</strong>正式留出任务、隐藏 Golden 和测试期反馈不得进入任务生成、训练或技能更新。</li>
+<li><strong>模型与裁判隔离：</strong>评分器不能从模型身份、隐藏答案或非授权信息中推断正确性；无法裁定时保留 UNKNOWN。</li>
+</ol>
+<p>关键的工程补口不是“再写一个 DAG 文件”，而是让 intervention_spec 真正驱动变体，并且自动检查预期变化和不变量。若只改题面、不更新合同、回执、账簿和 Golden，生成出来的是矛盾题，不是反事实任务。</p>
+
+<h2 id="example">五、用现有 CIT / PAY / PCK 资产讲清楚</h2>
+<h3>5.1 CIT：最适合展示跨材料专业依赖，但先修复题目缺陷</h3>
+<p>CIT 的业务问题是：根据成本承担协议、往来函生效日、现场交接、签约人档案和合同权利，判断项目归属、期间和相应申报字段。它很适合展示“多份材料如何共同支持一项专业判断，以及判断如何传播到最终工作产物”。</p>
+<div class="graph">
+<div class="gtitle">CIT 的概念性依赖链</div>
+<div class="graphline"><div class="node blue">成本承担协议</div><div class="node blue">合同权利与签约主体</div><div class="node blue">生效日与交接记录</div></div>
+<div class="graphline"><span class="arrow">↓</span><span class="arrow">↓</span><span class="arrow">↓</span></div>
+<div class="graphline"><div class="node gold">主体归属判断</div><span class="arrow">+</span><div class="node gold">期间归属判断</div></div>
+<div class="graphline"><span class="arrow">↓</span><span class="arrow">↓</span></div>
+<div class="graphline"><div class="node green">项目成本归集 / 申报字段 Claim</div></div>
+</div>
+<p>对生效日期做关键条件干预时，必须同步更新相关合同或往来函、服务/交接证据和受影响的项目期间记录，再让 Oracle 从导出的材料重新计算 Golden。预期变化应该明确到具体期间、金额和输出字段；主体归属等无关判断则应保持不变。</p>
+<div class="caution"><strong>现有题目限制：</strong>当前 CIT01-V05 的模型答卷曾在 72 个项目字段中出现 16 个错误，集中于 foreign 项目；但题面提及的数据字典未交付，且原始分与严口径重评分存在差异。因此它是有价值的机制案例和修题入口，尚不能直接作为冻结正式实验样本。应先补齐材料、复核 Oracle、冻结评分版本。</div>
+<h3>5.2 PAY：适合做期间规则与金额传播的清晰试验</h3>
+<p>PAY01-V03 的案例涉及离任后持续履行协议与月度履行回执。现金预付金额不能直接替代当期已履行服务对应的应计金额；当前材料记录为全年 11 个月存在履行回执。这个案例可以把“服务期间/履行证据 → 期间判断 → 应计金额 → 交付 Claim”拆清楚。</p>
+<p>它适合测试两件事：第一，改变履行月份或服务期间时，模型能否同步调整应计金额；第二，只增加重复月份记录时，模型是否只是增加处理成本而没有新的专业判断。现有 Rubric 夹具曾让错误答卷从 100 分降到 90 分，但真实模型两次运行在该条目均得满分。这个差异提醒我们：评分器能扣分不等于真实模型会犯错。</p>
+<h3>5.3 PCK：适合验证合理替代答案是否被误罚</h3>
+<p>PCK01-V01 当前评分口径给出的可批准金额为 32,553.27 元，但材料还支持 30,273.84 元的替代处理。若评分器只接受单一数值，可能把有业务依据的答案误判为错误。因此 PCK 更适合作为 Claim/Rubric 有效性和合理替代答案实验，不应在没有专家裁定前用它证明模型难度。</p>
+<div class="callout"><strong>样本选择建议：</strong>CIT 用于主依赖链和跨材料条件干预，但必须先修复材料与评分问题；PAY 用于较清晰的期间—金额传播和评分敏感性试验；PCK 用于多解与误拒校准。正式主实验从通过材料、Golden、Rubric 和专家准入的题目中选择，不能因为某个案例“看起来有故事”就直接纳入。</div>
+
+<h2 id="experiment">六、匹配实验怎么做：要证明是关键依赖，不是题变长了</h2>
+<p>实验的核心不是把任务做得越来越长，而是区分不同变化到底改变了什么。至少需要五组，四类变体加一个基线。</p>
+<div class="tablewrap"><table><thead><tr><th>实验组</th><th>具体操作</th><th>正确业务结论</th><th>它回答什么</th></tr></thead><tbody>
+<tr><td>A · Baseline</td><td>原始基础任务</td><td>基线结果</td><td>提供参照</td></tr>
+<tr><td>B · Structural</td><td>增加重复月份、重复行、同类单据或步骤</td><td>原则上不变</td><td>只增加工作量会不会让模型更容易错？</td></tr>
+<tr><td>C · Critical Intervention</td><td>改变主体、生效日期、规则阈值、合同条件或审批要求</td><td>按业务规则发生预期变化</td><td>关键条件变化是否引发特定判断和输出变化？</td></tr>
+<tr><td>D · Irrelevant Distractor</td><td>增加相似但不影响目标判断的材料</td><td>不变</td><td>模型能否筛选相关证据并抵抗干扰？</td></tr>
+<tr><td>E · Semantic Equivalent</td><td>改写表达、文件布局或等价格式</td><td>不变</td><td>模型和评分器是否对语义等价输入保持稳定？</td></tr>
+</tbody></table></div>
+<h3>6.1 最重要的控制变量</h3>
+<ul>
+<li>同一基础业务世界、同一题族、同一交付目标和相同的输出格式。</li>
+<li>尽量匹配文件数、文本长度、表格行数、计算规模和工具预算；无法完全相等时记录差异并纳入分析。</li>
+<li>关键条件组必须更新所有受影响材料和 Golden；结构扩展组不能偷偷引入新的专业判断。</li>
+<li>无关扰动组与语义等价组必须保持正确结论和关键 Claim 不变。</li>
+<li>固定模型版本、系统提示、工具权限、温度/采样配置、上下文预算、超时和运行环境。</li>
+<li>每次运行重置 Agent 可见状态，随机化任务顺序，保留 seed、模型调用和输出文件。</li>
+<li>专家先审任务有效性，再运行模型；不允许看过模型成绩后挑选任务进入正式集。</li>
+</ul>
+<h3>6.2 研究假设要写成可被推翻的形式</h3>
+<div class="edge"><h3>H1 · 关键条件效应</h3><p>在输入规模和工作量匹配后，决策关键条件组比单纯结构扩展组更容易引发与目标专业判断相关的错误。若差异不存在，就不能声称关键依赖比结构规模更能形成专业难度。</p></div>
+<div class="edge"><h3>H2 · 依赖传播可解释性</h3><p>关键条件变化后，模型错误应更多集中在 DAG 预先标记的受影响判断和下游 Claim，而不是随机散落在无关字段。如果错误没有沿预测依赖出现，说明 DAG 的解释力不足。</p></div>
+<div class="edge"><h3>H3 · 不变量保持</h3><p>在无关扰动和语义等价组中，正确模型输出应保持关键结论稳定。若模型或评分器因格式变化而大幅改变结果，说明测量协议存在鲁棒性问题。</p></div>
+<div class="edge"><h3>H4 · 跨模型与跨题族复现</h3><p>观察到的关键条件效应应在多个模型和独立基础场景中具有一致方向；若只出现在一个模型或一条题目上，应报告为个案现象，不能升级为一般能力结论。</p></div>
+<h3>6.3 结果指标：不要只看总分</h3>
+<div class="tablewrap"><table><thead><tr><th>指标</th><th>定义</th><th>主要解释</th></tr></thead><tbody>
+<tr><td>Critical Claim Error Rate</td><td>关键 Claim 中错误数 / 可裁定关键 Claim 数</td><td>关键专业判断是否失败</td></tr>
+<tr><td>Decision Transition Accuracy</td><td>关键条件变化的任务对中，模型是否在两题上都给出正确且相应变化的决定</td><td>能否理解条件变化的业务后果</td></tr>
+<tr><td>Invariant Preservation</td><td>无关扰动或等价变形下，受保护 Claim 保持正确的比例</td><td>能否保持不该变化的结果</td></tr>
+<tr><td>Downstream Claim Consistency</td><td>上游判断变化后，相关下游字段是否一致更新</td><td>错误是否沿业务依赖传播</td></tr>
+<tr><td>Task Completion</td><td>必需交付物完整且有效的任务比例</td><td>工作是否完成</td></tr>
+<tr><td>Cost / Latency</td><td>Token、工具调用、运行时长和失败重试</td><td>性能变化是否只是成本变化</td></tr>
+<tr><td>Unadjudicated / UNKNOWN</td><td>证据不足或无法裁定的比例</td><td>不确定性是否被正确保留</td></tr>
+</tbody></table></div>
+<p>Decision Transition Accuracy 需要同时检查“该变的变了”和“不该变的没变”。如果只检查模型有没有把数字改掉，模型随机改答案也可能看起来响应了干预。</p>
+<h3>6.4 统计分析怎么安排</h3>
+<p>先做小规模 pilot，估计任务间方差、模型运行方差和可观察效应，再进行正式样本量/统计功效规划。正式分析可采用任务对内配对差异、按基础场景或题族聚类的 Bootstrap 置信区间；对 Claim 正误等二元结果，可使用含模型和变体类型固定效应、任务族/基础场景随机效应的混合效应 Logistic 模型。主指标、排除规则和分母应在正式运行前冻结，避免看完成绩再挑指标。</p>
+<p>需要分别报告模型差异、变体效应、交互效应和成本变化。不能把平均分下降直接解释为专业能力下降；还要检查关键 Claim 是否发生目标错误、Oracle 是否正确、评分器是否有效、任务是否可解。</p>
+
+<h2 id="validity">七、评分有效性和复现证据：要能证明考试本身没有错</h2>
+<p>即使 DAG 变体设计得很好，如果 Golden 算错、Rubric 漏掉关键条件或拒绝合理替代答案，模型分数也不能支持能力结论。评分有效性必须单独作为实验，不应只把评分器“能跑”当作通过。</p>
+<h3>7.1 每题至少准备七类答卷</h3>
+<ol>
+<li>正确标准答卷：检查预期满分或容差。</li>
+<li>典型实质错误：检查关键错误是否被扣分。</li>
+<li>遗漏必要字段或步骤：检查交付完整性。</li>
+<li>合理替代答案：检查业务上可接受的第二解是否被接受。</li>
+<li>格式或表达等价答案：检查是否误把格式差异当业务错误。</li>
+<li>证据不足或存在歧义的答案：检查是否允许补证、暂停或 UNKNOWN。</li>
+<li>对抗或泄漏答卷：检查隐藏字段、答案泄漏和评分协议漏洞。</li>
+</ol>
+<h3>7.2 专家盲审与评分器对照</h3>
+<p>专家应在不知道模型身份和评分器原始分数的情况下独立判断。关键样本采用双人盲审，分歧由第三方裁决或标为无法裁定。评分器与专家逐条 Claim 对齐，报告 False Acceptance、False Rejection、Critical Error Recall、Alternative Answer Acceptance、Claim-level Agreement、Expert Inter-rater Agreement 和 Adjudication Rate。</p>
+<p>每次修复评分器后，必须用同一批冻结答卷重新评分。评分器变得更严格后分数下降，说明评分发生变化，不代表模型能力下降；评分器修复后分数上升，也不代表模型学会了新能力。</p>
+<h3>7.3 任务与运行的复现记录</h3>
+<div class="tablewrap"><table><thead><tr><th>层</th><th>必须冻结/记录的内容</th></tr></thead><tbody>
+<tr><td>任务来源</td><td>task_id、family_id、业务世界版本、生成器版本、seed、来源文件和最终文件 hash</td></tr>
+<tr><td>DAG</td><td>图版本、节点/边、关键节点、intervention_spec、预期变化和不变量</td></tr>
+<tr><td>Oracle</td><td>Oracle 版本、可见材料输入、Golden 文件、独立复算记录</td></tr>
+<tr><td>评分</td><td>Rubric/Claim 版本、容差、严重程度、合法替代答案、评分夹具</td></tr>
+<tr><td>Agent</td><td>模型版本、提示词、工具权限、预算、温度、运行 seed、完整轨迹</td></tr>
+<tr><td>专家</td><td>盲审记录、分歧、裁决理由、专家画像与专业范围</td></tr>
+</tbody></table></div>
+<p>正式集必须与生成、调参、技能更新和模型选择隔离。所有无法验证的项目保留 UNKNOWN；不能把缺证据静默当成功或失败。</p>
+
+<h2 id="related">八、与最强近邻论文逐项区分：不能只说“我们也用 DAG”</h2>
+<div class="tablewrap"><table><thead><tr><th>工作</th><th>它已经做了什么</th><th>与 CFO 候选方法的差异边界</th><th>我们必须补出的证据</th></tr></thead><tbody>
+<tr><td><a href="https://proceedings.mlr.press/v306/huang26ap.html" target="_blank" rel="noopener">ProFinR / ProFinAgent</a></td><td>528 道专家金融问题、53 个金融工具、13 类工具；用 DAG Planner 和 Case-Based Memory 组织工具执行</td><td>其 DAG 主要组织 Agent 的工具执行依赖；CFO 的 Task DAG 试图表示业务证据、专业判断和交付 Claim 的依赖。两者都在金融领域使用 DAG，不能说“首次金融 DAG”</td><td>证明业务条件 DAG 能控制任务干预并追踪下游工作产物，不只是安排工具调用</td></tr>
+<tr><td><a href="https://arxiv.org/abs/2605.26321" target="_blank" rel="noopener">Anchor</a></td><td>参数化约束联合生成任务、ERP 环境、认证解和状态 Verifier，并研究难度</td><td>它是最强的“统一规格—任务—环境—解—验证”近邻。CFO 不能以资产联动本身宣称创新</td><td>财务专业依赖、跨文件材料传播、工作产物 Claim 和决策关键条件效应的专门实证</td></tr>
+<tr><td><a href="https://arxiv.org/abs/2309.17167" target="_blank" rel="noopener">DyVal</a></td><td>用图结构控制推理任务复杂度并测模型表现</td><td>图控难度已有先例；CFO 要证明业务规则依赖与专业交付结果之间的特定关系</td><td>业务关键条件干预 vs 图规模/重复结构的匹配实验</td></tr>
+<tr><td><a href="https://arxiv.org/abs/2607.08093" target="_blank" rel="noopener">CausalDS</a></td><td>隐藏 SCM、观测数据、干预、反事实和隐藏真值评分</td><td>因果任务生成和反事实评分已有先例；CFO 不应把普通 DAG 改名为因果模型</td><td>真实业务规则、专业证据和财务工作产物上的可审计干预协议</td></tr>
+<tr><td><a href="https://arxiv.org/abs/2609.04706" target="_blank" rel="noopener">FinalityBench</a></td><td>支付事件延迟/冲突、双生任务和经济后果评分</td><td>金融领域的状态冲突、反事实配对与后果评分已经有人研究</td><td>扩展到主体、期间、规则、跨资料勾稽和财务控制等工作产物判断</td></tr>
+<tr><td><a href="https://arxiv.org/abs/2605.28556" target="_blank" rel="noopener">A Matter of TASTE</a> / <a href="https://aclanthology.org/2026.acl-long.1224/" target="_blank" rel="noopener">SGVEF-LOOP</a></td><td>任务覆盖、拓扑探索、变形测试和执行反馈</td><td>覆盖驱动生成和反馈闭环不是新空白；语义等价变形也不等于改变正确业务结论的干预</td><td>证明关键财务条件干预比普通结构/覆盖变化更能识别专业判断错误</td></tr>
+<tr><td><a href="https://arxiv.org/abs/2607.27189" target="_blank" rel="noopener">APEX-Accounting</a> / <a href="https://arxiv.org/abs/2609.32835" target="_blank" rel="noopener">FinancialAuditBench</a> / <a href="https://arxiv.org/abs/2607.19409" target="_blank" rel="noopener">FORCE-Bench</a></td><td>会计任务、审计材料、专家 Golden、Rubric 和 Agent 评测</td><td>不能宣称首次财务工作 Benchmark、首次专家评分或首次多文件财务任务</td><td>证明判断级依赖、输出字段和 Claim 的对齐机制及其实验价值</td></tr>
+<tr><td><a href="https://arxiv.org/abs/2610.28679" target="_blank" rel="noopener">VerifierBench</a> / <a href="https://arxiv.org/abs/2605.10448" target="_blank" rel="noopener">Score Support</a> / <a href="https://arxiv.org/abs/2610.16067" target="_blank" rel="noopener">Oracle Failures</a></td><td>验证器自身测试、评分证据支持和 Oracle 缺陷审计</td><td>评分有效性不能只作为附录里的 QC 通过率</td><td>专家盲审、合法替代解、假接受/假拒绝和 Claim 级误判分析</td></tr>
+</tbody></table></div>
+<p>这个对照意味着，CFO 的创新主张必须收窄到“专业决策依赖如何在任务变体、可见材料、独立答案和评分证据之间保持一致，并产生可解释的模型差异”。如果实验不能证明这一点，就应把工作定位为一个高质量领域 Benchmark 和工程整合，而不是强方法创新。</p>
+
+<h2 id="medical">九、医学三篇论文的借鉴位置：工作 Benchmark、关键推理图、专业 Rubric</h2>
+<div class="tablewrap"><table><thead><tr><th>医学论文</th><th>作者实际研究的问题</th><th>对应 CFO 的部分</th><th>不能照搬的地方</th></tr></thead><tbody>
+<tr><td><a href="https://aclanthology.org/2026.findings-emnlp.1601/" target="_blank" rel="noopener">MedCPEnv</a></td><td>模拟医院中的主动信息获取、检查选择、诊断治疗、成本—质量权衡；并展示 GRPO 训练</td><td>整篇专业 Work Agent Benchmark 的叙事、环境/任务/Agent/能力发现的组织方式</td><td>CFO100 当前主要是文件交付，不具备同等医院式交互环境；不需要为模仿它而加入 RL</td></tr>
+<tr><td><a href="https://arxiv.org/abs/2604.17282" target="_blank" rel="noopener">MedPRMBench</a></td><td>Clinical Reasoning Blueprint、14 类错误、步骤级标签和 PRM 检错</td><td>必要专业节点、前置条件、受控错误构造与细粒度归因</td><td>它测过程奖励模型；CFO 测企业财务 Agent 的工作产物，不能把业务 DAG 等同于医学推理蓝图</td></tr>
+<tr><td><a href="https://aclanthology.org/2026.findings-emnlp.1339/" target="_blank" rel="noopener">ClinConsensus</a></td><td>医生定义每案例 Rubric，校准关键标准覆盖，并比较模型表现</td><td>财务专家定义 Claim、关键业务要求、合理替代处理和能力分项</td><td>医学阈值和 Rubric 不能直接迁移；财务金额、主体、期间、审批错误需要自己的严重程度和容差规则</td></tr>
+</tbody></table></div>
+<p>三篇分别提供三种参照：MedCPEnv 说明如何讲完整的专业工作 Agent 评测；MedPRMBench 说明如何让关键节点和错误类型进入测试；ClinConsensus 说明平均分之外还要测关键专业要求是否覆盖。</p>
+<div class="caution"><strong>文献元数据校正：</strong>MedCPEnv 和 ClinConsensus 的正式收录信息为 Findings of EMNLP 2026；MedPRMBench 当前引用 arXiv:2604.17282。此前材料中将前两篇简写为 ACL 2026 Findings 不够准确，后续论文参考文献应以 ACL Anthology 页面为准。</div>
+
+<h2 id="plan">十、从现有状态到最小可跑实验：谁做什么、怎样验收</h2>
+<p>当前研究计划中已经有 21 个建设期题族、100 道入包候选、41 道内部标记交付和 59 道未达标或跳过。41 道内部标记交付不等于外部专家准入；开发期均分也不能替代冻结留出集上的正式能力结果。下一步应该优先打通一条最小、干净、可复现的实验链，而不是先追求更多题量。</p>
+<div class="tablewrap"><table><thead><tr><th>阶段</th><th>需要完成的工作</th><th>交付物</th><th>验收条件</th></tr></thead><tbody>
+<tr><td>P0 · 选题与冻结</td><td>选择一条材料齐全、Oracle 可复算、评分口径稳定的基础任务；登记版本和来源</td><td>Base Task Manifest</td><td>材料可见、可解、无缺件、版本可追溯</td></tr>
+<tr><td>P1 · DAG 对齐</td><td>逐项标记 Evidence / Rule / Judgment / Computation / Gate / Claim，清除孤立节点</td><td>Task DAG + Claim Map</td><td>每个关键判断有证据；每个关键 Claim 可回溯</td></tr>
+<tr><td>P2 · 变体传播</td><td>实现关键条件、结构扩展、无关扰动、语义等价四类变体规格</td><td>Intervention Manifest + Variant Pack</td><td>所有受影响材料同步更新；不变量通过检查</td></tr>
+<tr><td>P3 · 独立复算</td><td>Oracle 从最终考生可见材料重新计算 Golden；独立复核关键数值</td><td>Golden + Oracle Replay</td><td>Golden 可复算；不依赖生成器隐藏状态</td></tr>
+<tr><td>P4 · 评分校准</td><td>构造正确、典型错误、遗漏、合法替代、歧义答卷；专家盲审</td><td>Claim Rubric + Validity Report</td><td>假接受、假拒绝、关键错误召回和专家一致性有结果</td></tr>
+<tr><td>P5 · 模型匹配实验</td><td>固定模型、预算、工具和运行协议，执行五组匹配任务</td><td>Frozen Run Manifest + Result Table</td><td>主指标预注册；分母明确；有配对结果和不确定性</td></tr>
+<tr><td>P6 · 跨题族复验</td><td>在另一类 CFO 工作中复验同一依赖—干预—评分协议</td><td>Replication Report</td><td>能区分可迁移机制与单题特例</td></tr>
+</tbody></table></div>
+<h3>10.1 建议的首轮案例分工</h3>
+<ul>
+<li><strong>CIT：</strong>主依赖链候选，展示跨材料主体/期间判断和输出字段传播；先补齐数据字典、修复材料与评分口径。</li>
+<li><strong>PAY：</strong>优先做期间—履行证据—金额的较小闭环，用于测试变体传播和评分敏感性。</li>
+<li><strong>PCK：</strong>专门用于合理替代答案和评分误拒测试，不把它的单一标准值当作唯一真值。</li>
+</ul>
+<p>先用 PAY 做工程闭环可以降低首轮实现风险；CIT 在材料修复和专家复核后承担更完整的跨文件依赖实验；PCK 负责检验评分器是否公平。最终主实验使用哪个题族，应由材料质量、Oracle 独立性、变体可控性和专家可判定性共同决定。</p>
+<h3>10.2 需要形成的最小文件合同</h3>
+<pre><code>task_manifest.json
+  task_id, family_id, world_version, seed
+  visible_artifact_hashes, task_spec_version
+
+task_dag.json
+  nodes: evidence, rule, judgment, computation, gate, claim
+  edges: supports, activates, determines, aggregates, gates
+  critical_nodes, downstream_claims
+
+intervention_manifest.json
+  intervention_type, target_node, changed_value
+  expected_delta, invariants, affected_artifacts
+
+golden_manifest.json
+  oracle_version, visible_inputs, golden_hash
+  recomputation_status, independent_check
+
+claim_rubric.json
+  claim_id, output_location, expected_value
+  tolerance, severity, admissible_alternatives
+  evidence_requirements, adjudication_status
+
+run_manifest.json
+  model_version, prompt_version, tool_permissions
+  budget, seed, runtime_config, output_hashes</code></pre>
+<p>文件合同的目的，是让每次实验都能回答：改了哪个业务条件、哪些材料随之改变、Golden 为什么改变、哪些 Claim 应变化、模型实际交付了什么、评分器判了什么、专家是否认可。</p>
+
+<h2 id="claim">十一、最终怎样写研究贡献：现在版、实现版、结果版</h2>
+<h3>11.1 现在写研究计划时</h3>
+<blockquote>本研究拟提出一种面向企业财务工作产物的决策关键依赖构题与测量方案。该方案将考生可见业务证据、必要专业判断、计算与控制条件以及可观察交付 Claim 组织为带类型和来源的依赖 DAG；围绕关键业务条件构造受控任务变体，并由独立 Oracle 从最终可见材料重新计算 Golden。研究将通过与结构扩展、无关扰动和语义等价变形的匹配实验，检验决策关键依赖能否带来可解释的模型能力差异，并通过专家盲审验证 Claim 级评分的有效性。</blockquote>
+<h3>11.2 工程和实验完成后</h3>
+<blockquote>我们提出并实现了一套决策关键依赖驱动的企业财务任务构造与测量协议，将专业判断依赖、任务材料传播、独立参考答案计算和 Claim 级评分统一到可追溯的任务规格中，并通过匹配任务实验验证其对专业判断错误的识别能力。</blockquote>
+<p>只有在正式实验支持时，才可以进一步写“该方法比结构规模驱动的任务扩展更能区分模型的专业判断能力”。如果没有显著、稳定且可复现的差异，就不能保留这句话。</p>
+<h3>11.3 论文可以主张的三项贡献</h3>
+<ol>
+<li><strong>Benchmark 贡献：</strong>定义企业财务工作产物的判断级测量单位，将可见证据、必要专业判断和交付 Claim 对齐，并报告真实有效的能力覆盖。</li>
+<li><strong>方法贡献（主候选）：</strong>提出决策关键依赖驱动的受控变体方法，使必要业务条件的变化能够追溯到受影响材料、Golden 和 Claim，并保留不变量。</li>
+<li><strong>测量与实证贡献：</strong>通过模型×专业判断矩阵、匹配难度实验和专家评分校准，分析模型在哪些关键判断上失败，并区分模型错误与任务/评分错误。</li>
+</ol>
+<div class="callout"><strong>最终判断：</strong>这篇论文最有希望的研究主张不是“我们也用了 DAG”，也不是“我们把 Oracle 和 Rubric 接起来了”。它应当是：<strong>我们能否把企业财务真正影响业务结论的必要条件，变成可控制、可传播、可复算、可评分的任务干预对象，并用匹配实验证明它能更准确地揭示 Agent 的专业判断能力边界。</strong>目前这是一条明确的研究路线和可证伪假设，尚待工程接线、专家准入和正式模型实验来成立。</div>
+<p>如果这条方法最终只在一个题目上有效，论文就应报告为案例级结果；如果它在多个题族、多个模型上稳定复现，才有基础把它提升为企业财务专业 Work Benchmark 的通用构题与测量方法。</p>
+<p class="section-note">相关阅读：<a href="11-cfo-benchmark-research-story.html">第 11 篇：CFO 论文叙事与实验方案</a> · <a href="12-cfo-graph-research-map.html">第 12 篇：CFOGraph 与研究缺口</a> · <a href="13-cfo-research-contribution-graph.html">第 13 篇：论文技术节点与已验证连边</a>。</p>
+<p class="foot">资料边界：本文的 CFO 工程状态和 PAY/CIT/PCK 案例来自 2026-11-04 CFO 研究方案及既有审计记录；未在本次写作中重新运行私有 CFO 仓库。公开论文链接用于定位原文；正式投稿前仍应逐篇核对论文版本、代码与实验范围。文中目标架构、文件合同和实验步骤属于建议补充方案，不代表已经完成。</p>
+</article>
+<footer>学习博客 · 2026-11-04 · CFO-WorkBench Research Design</footer>
+</main>
+</div>
+</body>
+</html>
