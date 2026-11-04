@@ -10,5 +10,6 @@
 - 04 Trace as State：这篇其实只有七层意思
 - 05 开放任务评测：LLM Judge / Rubric / Human-Human
 - 06 Odyssey：Agent RL 真正要规模化的是“可信经验”
+- 15 CFO-Bench 研究方向调整：从会议决策到论文路线图
 
 线上站点由 Vercel 部署，GitHub `main` 更新后自动触发生产部署。
