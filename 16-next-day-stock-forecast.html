@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>提前一天判断明天：A股短线交易的 T-1 预测系统｜学习博客</title>
+<meta name="description" content="把短线交易从事后解释改成前一交易日预测：冻结数据、双策略筛选、隔夜风险、入场触发、仓位计算和滚动回测。">
+<link rel="stylesheet" href="styles.css">
+<style>
+.article h1{font-size:38px;line-height:1.28;margin:0 0 15px}.article h2{scroll-margin-top:24px;margin-top:43px}.article h3{font-size:19px;line-height:1.5;margin:28px 0 10px;color:#2e5b4d}.article p{margin:12px 0 16px;line-height:1.95}.article a{color:#2d6754;text-decoration:underline;text-underline-offset:3px}.article ul,.article ol{padding-left:24px;line-height:1.9}.article li{margin:6px 0}.article table{border-collapse:collapse;width:100%;font-size:13px;line-height:1.8;margin:17px 0 24px}.article th,.article td{border-bottom:1px solid #e1e7e1;padding:10px 11px;vertical-align:top;text-align:left}.article th{background:#edf4ee;color:#285445}.article code{font-size:.9em;border-radius:4px;background:#f1f3ef;padding:2px 5px}.article pre{font-size:12px;line-height:1.7;background:#20352f;color:#ecf4ef;padding:18px;border-radius:12px;overflow-x:auto}.article pre code{background:none;color:inherit;padding:0}.article blockquote{border-left:3px solid #8cab99;background:#f6faf7;margin:20px 0;padding:7px 18px}.article .lead{font-size:18px;color:#354d41;line-height:1.95}.article .eyebrow{font-size:12px;color:#54786a;letter-spacing:.11em;text-transform:uppercase;font-weight:750;margin-bottom:10px}.article .callout{border:1px solid #cfe3d6;background:#eff8f1;border-radius:13px;padding:19px 22px;margin:21px 0;line-height:1.95}.article .caution{border:1px solid #e9d8ac;background:#fdf7e8;border-radius:12px;padding:16px 19px;margin:18px 0;line-height:1.9}.article .toc{border:1px solid #dce7dc;background:#f8faf7;border-radius:12px;padding:18px 21px;margin:23px 0}.article .toc a{display:block;padding:4px 0;font-size:14px;text-decoration:none}.article .toc a:hover{text-decoration:underline}.article .chips{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}.article .chip{font-size:12px;padding:4px 10px;border-radius:99px;background:#eaf2ea;color:#32604a;font-weight:700}.article .chip.blue{background:#e7effb;color:#355d87}.article .chip.gold{background:#f9edcf;color:#845e1d}.article .graph{border:1px solid #dde8df;border-radius:15px;padding:18px;margin:20px 0;background:linear-gradient(130deg,#fafcfa,#f4f9f5)}.article .graphline{display:flex;gap:8px;align-items:stretch;justify-content:center;margin:8px 0;flex-wrap:wrap}.article .node{padding:12px 10px;border-radius:10px;border:1px solid #bed5c7;background:white;font-weight:700;font-size:13px;flex:1;min-width:120px;text-align:center}.article .node.blue{border-color:#bad0e8;background:#ecf3fd;color:#335b86}.article .node.gold{border-color:#e8d49e;background:#fdf4d9;color:#815e22}.article .node.green{border-color:#b8dabc;background:#edf7eb;color:#355d3c}.article .arrow{font-size:21px;color:#7e9c8b;align-self:center}.article .gtitle{font-size:12px;font-weight:800;color:#607d69;letter-spacing:.12em;text-transform:uppercase;margin-bottom:9px}.article .gdesc{font-size:13px;color:#6b7b70;margin-top:8px}.article .dual{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin:16px 0}.article .dual>div{border:1px solid #e0e8e1;border-radius:12px;padding:16px;background:#fbfcfa}.article .dual h3{margin:0 0 8px;font-size:17px}.article .status{font-size:11px;font-weight:800;padding:3px 8px;border-radius:7px;display:inline-block}.article .status.now{background:#e5f2e8;color:#2d6940}.article .status.partial{background:#fff2d6;color:#815e22}.article .status.future{background:#e9effa;color:#355d87}.article .section-note{font-size:13px;color:#748077}.article .formula{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#f4f7f3;border:1px solid #dfe8df;border-radius:10px;padding:13px 15px;overflow-x:auto;font-size:13px;line-height:1.8}.article .foot{border-top:1px solid #e1e7e1;padding-top:17px;font-size:13px;color:#718073}
+@media(max-width:740px){.article h1{font-size:29px}.article .graphline{flex-direction:column}.article .node{width:100%}.article .arrow{transform:rotate(90deg)}.article .dual{grid-template-columns:1fr}.article table{font-size:12px}.article td,.article th{padding:8px}}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar">
+<div class="brand">学习博客</div>
+<div class="brand-sub">把“明天为什么涨跌”变成“今天收盘前能否提前识别机会与风险”。</div>
+<div class="nav-title">本篇目录</div>
+<div class="nav">
+<a href="index.html">← 返回博客首页</a>
+<a href="#question">01 · 为什么必须提前一天预测</a>
+<a href="#timeline">02 · T-1 到 T+1 的时间边界</a>
+<a href="#strategies">03 · 两类机会：超跌反转与强势回踩</a>
+<a href="#signals">04 · 指标各自解决什么问题</a>
+<a href="#decision">05 · 从信号到买入动作</a>
+<a href="#risk">06 · 2万元账户如何计算风险</a>
+<a href="#cases">07 · 东山精密历史案例复盘</a>
+<a href="#validation">08 · 怎样证明预测真的有效</a>
+<a href="#daily">09 · 每天的固定交付物</a>
+<a href="#boundary">10 · 结论与适用边界</a>
+</div>
+</aside>
+<main class="main">
+<a class="back" href="index.html">← 返回首页</a>
+<article class="article">
+<div class="eyebrow">16 · T-1 STOCK FORECASTING · 2026-11-06</div>
+<h1>提前一天判断明天：A股短线交易的 T-1 预测系统</h1>
+<p class="lead">短线交易真正有用的工作发生在行情结果出现之前。本文把东山精密 11 月 3 日至 6 日的连续行情讨论，整理成一套前一交易日预测下一交易日的研究流程：先冻结当时可见的数据，再识别市场、板块和个股状态，最后把预测转成可执行的入场条件、风险预算和次日验证记录。</p>
+<div class="callout"><strong>核心判断：</strong>我们要建立的是 T-1 预测流程，而不是 T+1 事后解释。每次预测必须记录“预测时点、数据截止时间、候选股票、方向情景、触发条件、失效条件、目标区间和计划风险”。没有这些字段，就无法判断一次交易究竟是提前识别，还是看到结果后补讲理由。</div>
+<div class="chips"><span class="chip">预测对象：下一交易日 / 1–5 日</span><span class="chip blue">策略：超跌反转 + 强势回踩</span><span class="chip gold">约束：2 万元本金 / 单笔计划风险 200 元</span></div>
+<nav class="toc"><strong>阅读路线</strong>
+<a href="#question">一、为什么必须提前一天预测？</a>
+<a href="#timeline">二、T-1 到 T+1 的时间边界</a>
+<a href="#strategies">三、两类机会：超跌反转与强势回踩</a>
+<a href="#signals">四、指标各自解决什么问题？</a>
+<a href="#decision">五、从信号到买入动作</a>
+<a href="#risk">六、2 万元账户如何计算风险？</a>
+<a href="#cases">七、东山精密历史案例复盘</a>
+<a href="#validation">八、怎样证明预测真的有效？</a>
+<a href="#daily">九、每天的固定交付物</a>
+<a href="#boundary">十、结论与适用边界</a>
+</nav>
+
+<h2 id="question">一、为什么必须提前一天预测？先区分预测和解释</h2>
+<p>如果周一上涨后才说“周一有资金回流、技术指标转强”，这只能解释周一已经发生的事情；如果周五收盘后就记录“周一可能反弹，触发条件是什么、什么情况取消、预计承担多少风险”，这才是可以检验的预测。两者最根本的区别是信息时间边界：预测只能使用当时已经公开的数据，不能把下一交易日的价格、成交量、龙虎榜或新闻倒灌进判断。</p>
+<table><thead><tr><th>工作方式</th><th>使用的信息</th><th>能回答什么</th><th>主要问题</th></tr></thead><tbody>
+<tr><td>事后解释</td><td>已经发生的完整行情</td><td>今天为什么涨跌</td><td>容易挑选有利指标，无法证明事前有效</td></tr>
+<tr><td>T-1 预测</td><td>前一交易日收盘数据 + 当晚已公开信息</td><td>明天有哪些情景，哪些股票值得提前布局</td><td>必须冻结时间戳，并接受预测错误</td></tr>
+<tr><td>盘中确认</td><td>下一交易日开盘后的新价格和成交</td><td>原预测是否触发，是否取消或调整</td><td>只能执行预先写好的条件，不能重写昨天预测</td></tr>
+</tbody></table>
+<p>因此，目标不是每天猜中涨跌，而是提前找到“预期收益相对风险足够好”的少数机会。即使某只股票第二天上涨，如果前一晚没有可识别的信号，或买入时风险收益比不合格，也不能把它算作策略成功。</p>
+
+<h2 id="timeline">二、T-1 到 T+1：把每天的工作时间固定下来</h2>
+<div class="graph">
+<div class="gtitle">预测与执行的时间链</div>
+<div class="graphline"><div class="node blue">T 日收盘<br><small>冻结 OHLCV、指标、板块和资金数据</small></div><div class="arrow">→</div><div class="node green">T 日盘后<br><small>公告、龙虎榜、行业与公司事件</small></div></div>
+<div class="graphline"><div class="node gold">下一交易日开盘前<br><small>海外市场、期货、行业新闻更新</small></div><div class="arrow">→</div><div class="node green">T+1 开盘后<br><small>观察竞价、开盘缺口、VWAP 和量价确认</small></div></div>
+<div class="graphline"><div class="node blue">T+1 执行<br><small>触发则按计划交易，失效则取消</small></div><div class="arrow">→</div><div class="node gold">T+1 收盘复盘<br><small>记录预测命中、偏差、交易和成本</small></div></div>
+<div class="gdesc">周五预测周一时，周末不交易，但可以补充海外行情和公告；周一开盘前更新风险判断。周一盘中确认只决定是否执行，不允许用盘中结果伪装成周五已经知道的信号。</div>
+</div>
+<p>这里要保留两个版本：周五收盘时的“原始预测”和周一开盘前的“隔夜更新”。两者都要留档。这样才能分别检验技术指标的预测价值，以及海外市场和周末消息带来的增量价值。</p>
+<table><thead><tr><th>版本</th><th>截止时间</th><th>允许使用</th><th>禁止使用</th></tr></thead><tbody>
+<tr><td>V1：收盘预测</td><td>T 日收盘后固定时间</td><td>当日完整日线、已发布公告、已收盘板块数据</td><td>T+1 盘中行情及后来发布的信息</td></tr>
+<tr><td>V2：隔夜更新</td><td>T+1 开盘前</td><td>隔夜海外市场、盘后公告、政策和行业新闻</td><td>T+1 开盘后的价格和成交</td></tr>
+<tr><td>V3：执行确认</td><td>T+1 开盘后预设观察窗口</td><td>开盘价、VWAP、量价结构和板块同步性</td><td>把触发后才出现的信号写回 V1/V2</td></tr>
+</tbody></table>
+
+<h2 id="strategies">三、两类机会：超跌反转与强势回踩</h2>
+<p>只盯 RSI 低于 30，会错过强势股回踩；只追均线多头，又容易在短线过热时买在高位。因此，候选池必须同时跑两种策略，最后由市场环境和风险过滤器决定是否交易。</p>
+<div class="dual">
+<div><h3>A · 超跌反转</h3><p><strong>要找的形态：</strong>前期下跌较多，价格偏离短期均线或布林下轨，卖压开始减弱，随后出现低点不再下移、收复关键价格或日内均价的证据。</p><p><strong>观察指标：</strong>RSI、BOLL、CCI、ROC、ATR、成交量、VWAP、前低和板块相对强度。</p><p><strong>主要风险：</strong>下跌趋势延续、利空跳空、跌停导致无法按计划退出。</p></div>
+<div><h3>B · 强势回踩</h3><p><strong>要找的形态：</strong>板块和个股相对强势，均线结构较好，价格上涨后缩量回踩关键均线或 VWAP，随后重新转强。</p><p><strong>观察指标：</strong>MA5/10/20、MACD、ADX/+DI/-DI、相对强度、VWAP、成交量和 ATR。</p><p><strong>主要风险：</strong>高位过热、板块退潮、放量跌破支撑和假突破。</p></div>
+</div>
+<p>两种策略不能用同一套阈值。超跌反转关注“卖压是否衰减、价格是否收复关键位置”；强势回踩关注“原有趋势是否保持、回踩是否缩量、重新转强是否有成交配合”。RSI 低于 30 只是超跌观察信号，RSI 处于 45–65 也只是某些趋势策略的参考区间，都不能独立构成买入指令。</p>
+
+<h2 id="signals">四、指标各自解决什么问题？不要把指标堆成一张表</h2>
+<p>指标要按决策问题分工。重复表达同一种信息的指标不能简单累加投票，例如 RSI、KDJ、CCI 都可能反映短期动量；MA、MACD 也有趋势信息重叠。真正有用的是把价格结构、成交行为、市场环境和风险约束拼成一条证据链。</p>
+<table><thead><tr><th>指标组</th><th>核心指标</th><th>回答的问题</th><th>使用方式</th></tr></thead><tbody>
+<tr><td>趋势</td><td>MA5/10/20/50、MACD、ADX、+DI/-DI</td><td>趋势方向是否向上，趋势是否增强</td><td>看均线排列、价格相对均线、MACD 柱变化和 DI 方向</td></tr>
+<tr><td>动量</td><td>RSI、KDJ、CCI、ROC、Williams %R</td><td>短期涨跌动能是否极端，是否出现转折</td><td>用于预警和确认，不把超买超卖直接等同反转</td></tr>
+<tr><td>波动</td><td>ATR、布林带宽度、真实振幅</td><td>正常波动有多大，止损是否容易被噪声触发</td><td>决定止损空间、仓位和是否值得隔夜</td></tr>
+<tr><td>量价</td><td>成交量、成交额、量比、VWAP、换手率</td><td>上涨是否有成交支持，回踩是否缩量</td><td>结合价格位置和时段，避免把放量下跌误读为资金流入</td></tr>
+<tr><td>相对强度</td><td>个股/行业指数相对收益、板块涨跌广度</td><td>个股是否强于市场和同板块</td><td>比较同一时间窗口的收益，而非只看绝对涨幅</td></tr>
+<tr><td>资金与事件</td><td>龙虎榜、融资变化、资金流估算、公告</td><td>是否存在资金撤离、解禁、业绩或监管事件</td><td>区分真实披露数据与平台估算；事件必须核对发布时间</td></tr>
+<tr><td>市场环境</td><td>指数、上涨家数、涨跌停、行业轮动、海外市场</td><td>个股机会是否得到环境支持</td><td>先判定市场状态，再决定策略是否启用</td></tr>
+</tbody></table>
+<h3>几个常用计算要统一口径</h3>
+<div class="formula">VWAP = 当日累计成交额 ÷ 当日累计成交股数</div>
+<div class="formula">ATR% = ATR(14) ÷ 当前价格 × 100%</div>
+<div class="formula">相对强度 = 个股区间收益率 − 基准指数区间收益率</div>
+<div class="formula">单笔计划风险 = (计划买入价 − 风险退出价) × 股数</div>
+<p>VWAP 是盘中动态指标，收盘后才有完整当日值；日线指标必须使用截至预测时点已经收盘的数据。不同平台的复权方式、成交额单位、RSI 平滑方法和资金流口径可能不同，计算前要统一数据源与定义。</p>
+
+<h2 id="decision">五、从信号到买入动作：先过硬门槛，再比较机会</h2>
+<p>不建议把十几个指标加权成一个看似精确的“买入分数”，因为很多指标高度相关，且阈值尚未通过历史数据校准。更稳妥的初版是分层决策：先排除不适合交易的股票，再识别策略形态，最后检查入场触发和风险收益比。</p>
+<div class="graph">
+<div class="gtitle">四层决策闸门</div>
+<div class="graphline"><div class="node blue">G1 · 市场与事件<br><small>板块退潮、重大利空、流动性异常？</small></div></div>
+<div class="graphline"><div class="arrow">↓</div></div>
+<div class="graphline"><div class="node green">G2 · 形态识别<br><small>超跌反转 or 强势回踩？</small></div></div>
+<div class="graphline"><div class="arrow">↓</div></div>
+<div class="graphline"><div class="node gold">G3 · 入场触发<br><small>价格结构、VWAP、成交量是否确认？</small></div></div>
+<div class="graphline"><div class="arrow">↓</div></div>
+<div class="graphline"><div class="node blue">G4 · 风险收益<br><small>仓位合规、目标空间、跳空风险可接受？</small></div></div>
+<div class="gdesc">任一硬门槛失败，结论就是不交易；候选排名不能覆盖风险否决。</div>
+</div>
+<table><thead><tr><th>决策状态</th><th>定义</th><th>对应动作</th></tr></thead><tbody>
+<tr><td><span class="status now">可考虑买入</span></td><td>策略形态成立、入场触发出现、风险收益合格</td><td>按计算仓位执行，不因看好而加大风险</td></tr>
+<tr><td><span class="status partial">观察</span></td><td>有潜在形态，但价格尚未确认</td><td>写清触发价和取消条件，不提前下单</td></tr>
+<tr><td><span class="status future">等待隔夜更新</span></td><td>周末或盘后存在重要外部变量</td><td>保留 V1 预测，开盘前另存 V2</td></tr>
+<tr><td><span class="status">放弃</span></td><td>重大风险、流动性问题、止损距离过大或盈亏比不足</td><td>不为了凑足候选数量而交易</td></tr>
+</tbody></table>
+<p>入场触发可以包括：15 分钟低点抬高、重新站上 VWAP、回踩不破、上涨放量而回踩缩量、个股强于板块。触发条件必须在预测时提前写好，不能等股价上涨后再临时选择一个有利指标。</p>
+
+<h2 id="risk">六、2 万元账户如何计算风险？先算能亏多少，再算买多少</h2>
+<p>当前讨论采用 2 万元本金、单笔计划风险 200 元作为示例约束。风险预算不是保证最大亏损：A 股 T+1、隔夜跳空、跌停无法成交和滑点都可能让实际损失超过计划值。</p>
+<div class="formula">可买股数 = floor(风险预算 ÷ (买入价 − 风险退出价) ÷ 100) × 100</div>
+<div class="formula">实际下单股数 ≤ min(风险预算允许股数, 资金允许股数)</div>
+<p>例如，计划买入 50 元，风险退出参考 48 元，风险预算 200 元，则 100 股的计划风险为 200 元；如果止损距离扩大到 3 元，100 股计划风险变成 300 元，这笔交易就不符合预算，应放弃或等待更好的入场结构，不能通过放宽止损来强行买入。</p>
+<table><thead><tr><th>买入价</th><th>退出参考价</th><th>100 股计划风险</th><th>判断</th></tr></thead><tbody>
+<tr><td>50.00</td><td>48.00</td><td>200 元</td><td>达到预算上限</td></tr>
+<tr><td>50.00</td><td>47.00</td><td>300 元</td><td>超预算，放弃</td></tr>
+<tr><td>80.00</td><td>78.50</td><td>150 元</td><td>仍需检查隔夜跳空和盈亏比</td></tr>
+</tbody></table>
+<p>目标收益至少应覆盖计划风险的两倍，作为初筛条件；但高盈亏比不等于高胜率。最终要用历史样本估计胜率、平均盈利、平均亏损和尾部损失，计算扣除成本后的期望收益。</p>
+<div class="caution"><strong>隔夜风险单独列示：</strong>如果股票可能因为海外市场、公司公告或行业消息跳空，止损单无法保证在预设价格成交。遇到跌停、停牌或流动性枯竭时，风险退出可能延迟。对于无法接受这种尾部风险的交易，正确动作是降低仓位或不持仓过周末。</div>
+
+<h2 id="cases">七、东山精密历史案例：哪些信号能提前看到，哪些不能</h2>
+<p>11 月 3 日至 6 日的讨论提供了两个有价值的回放样本。它们适合用来检查预测流程是否完整，但当前对话中的行情快照来自不同页面和不同时间，部分数字存在口径或时间戳差异。因此这里仅作机制复盘；正式回测必须重新取得交易所或同一供应商的原始日线、分钟线和公告时间，不应把聊天中的零散报价直接当作研究数据集。</p>
+<h3>案例 A：11 月 3 日收盘，预测 11 月 4 日</h3>
+<p>当时个股前一日明显回落，短期资金和趋势信号偏弱。只看东山精密自己的日线，合理结论应是“高波动、弱趋势，反弹可能存在但尚未确认”，而不是“明天必涨”。随后 11 月 4 日市场和电子科技板块出现强势反弹，东山精密大幅上涨。这个案例说明，个股指标不足以独立预测次日方向，市场状态、板块广度和隔夜变量必须进入模型。</p>
+<h3>案例 B：11 月 5 日收盘，预测 11 月 6 日</h3>
+<p>当时价格已经出现明显回落，MACD 和 ROC 偏弱，价格相对中期均线承压，资金流估算连续偏负；随后海外科技股和半导体方向出现大幅调整。将这些信号合并，应该在周五开盘前将东山精密标记为“隔夜高风险”，避免把前一天的反弹当作趋势已经恢复。</p>
+<div class="callout"><strong>两个案例给出的改进：</strong>案例 A 暴露了“只看个股会漏掉市场反弹”；案例 B 暴露了“只看技术指标会漏掉隔夜外部冲击”。因此 T-1 模型必须同时包含个股、板块、市场和隔夜四层信息，并保留每层证据的时间戳。</div>
+<p>这两个案例不能证明策略已经有预测能力。它们是规则设计和审计样本，真正的有效性要靠更长时间、未参与调参的样本外数据验证。</p>
+
+<h2 id="validation">八、怎样证明预测真的有效？用滚动回测，而不是挑成功案例</h2>
+<p>回测要模拟真实决策时点。每个交易日只使用当时可获得的数据生成候选和预测；下一交易日的开盘、最高、最低、收盘只用于计算结果。任何使用未来成交量、未来龙虎榜或未来公告时间的特征都会造成数据泄漏。</p>
+<h3>1. 预测目标要拆开定义</h3>
+<table><thead><tr><th>预测任务</th><th>标签定义示例</th><th>回答的问题</th></tr></thead><tbody>
+<tr><td>次日方向</td><td>T+1 收盘收益是否大于 0</td><td>明天收盘是否上涨</td></tr>
+<tr><td>次日可交易机会</td><td>预设入场后是否先触及目标，还是先触及风险退出位</td><td>明天是否有可执行的盈利路径</td></tr>
+<tr><td>1–3 日收益</td><td>未来 1、3 个交易日净收益</td><td>短线持有窗口是否有优势</td></tr>
+<tr><td>风险事件</td><td>次日大幅低开、跌停、最大不利波动</td><td>隔夜尾部风险是否能被提前识别</td></tr>
+</tbody></table>
+<h3>2. 必须报告的指标</h3>
+<ul>
+<li><strong>方向准确率：</strong>预测上涨/下跌方向的正确比例，但不能单独代表赚钱能力。</li>
+<li><strong>Precision@K：</strong>每天排名前 K 的候选里，真正达到交易目标的比例。</li>
+<li><strong>胜率与盈亏比：</strong>盈利交易占比、平均盈利、平均亏损及二者比值。</li>
+<li><strong>期望收益：</strong>扣除佣金、印花税、过户费、滑点后的每笔平均收益。</li>
+<li><strong>最大回撤与尾部损失：</strong>检查连续亏损、跳空和无法成交时的损失。</li>
+<li><strong>概率校准：</strong>如果模型给出 60% 的上涨概率，长期同类样本是否真的接近 60%。</li>
+<li><strong>交易覆盖率：</strong>有多少天选择不交易；不能只展示成功交易而隐藏大量被放弃或失败的机会。</li>
+</ul>
+<h3>3. 回测设计</h3>
+<p>先用历史数据做滚动时间切分：较早区间用于规则开发和参数选择，随后区间用于验证，最新区间作为完全未触碰的样本外测试。参数只能在训练窗口内选择，再向后滚动；不能随机打乱时间序列。至少比较超跌反转、强势回踩、简单均线策略和不交易基线。加入 A 股 T+1、100 股交易单位、涨跌停、停牌、手续费、滑点、复权和退市股票处理。</p>
+<p>初步可以先做 100–200 个交易日的试验，检查数据和规则是否能跑通；这只是工程试验规模，不足以自动证明稳定优势。之后需要更长历史、更广股票池、不同市场阶段和独立样本外测试。</p>
+<h3>4. 每天留一份不可回写的预测记录</h3>
+<pre><code>{
+  "forecast_id": "2026-11-06-002384",
+  "as_of": "2026-11-06T15:10:00+08:00",
+  "target": "2026-11-09",
+  "data_cutoff": "2026-11-06 close",
+  "strategy": "oversold_reversal",
+  "market_regime": "risk_off",
+  "signals": {
+    "trend": "weak",
+    "momentum": "oversold",
+    "volume": "elevated",
+    "sector_relative_strength": "weak",
+    "overnight_risk": "pending"
+  },
+  "decision": "watch_or_skip",
+  "entry_trigger": "predefined_price_and_volume_confirmation",
+  "invalidation": "break_of_reference_low_or_sector_weakness",
+  "risk_budget_cny": 200,
+  "status": "forecast_frozen"
+}</code></pre>
+<p class="section-note">以上为记录结构示例，不代表东山精密某日的真实模型输出。正式系统还应保存原始数据文件哈希、指标代码版本、交易规则版本、数据供应商和每次预测的完整候选池。</p>
+
+<h2 id="daily">九、每天的固定交付物：让预测真正能指导动作</h2>
+<p>每天收盘后，报告不应该先堆几十个指标，而应先回答“市场环境怎样、哪种策略今天启用、候选是谁、明天什么情况下可以买”。每只候选股票再附完整指标和风险计算。</p>
+<table><thead><tr><th>交付物</th><th>必须包含</th><th>用途</th></tr></thead><tbody>
+<tr><td>市场总览</td><td>指数、市场广度、涨跌停、成交额、行业强弱</td><td>决定是否允许主动做多</td></tr>
+<tr><td>候选池</td><td>超跌反转和强势回踩各自排名</td><td>避免只盯一只股票</td></tr>
+<tr><td>指标明细</td><td>趋势、动量、波动、量价、资金、相对强度</td><td>解释候选为何入选</td></tr>
+<tr><td>次日情景</td><td>上涨、震荡、下跌的触发条件</td><td>提前准备不同动作</td></tr>
+<tr><td>交易计划</td><td>入场区、确认条件、目标区、退出条件、股数</td><td>直接指导执行</td></tr>
+<tr><td>预测台账</td><td>冻结预测、次日实际、偏差、成本和复盘</td><td>验证策略是否真的有效</td></tr>
+</tbody></table>
+<p>每天最终只需要把最值得研究的 1–3 只股票放到执行清单，其余候选保留观察。没有任何股票通过硬门槛时，报告就应该明确写“今日不交易”，而不是为了让账户动起来硬凑一个买点。</p>
+
+<h2 id="boundary">十、结论与适用边界</h2>
+<div class="callout"><strong>一句话总结：</strong>短线交易应该在 T 日收盘后预测 T+1，在隔夜信息更新后冻结开盘前版本，再用 T+1 的盘中价格确认是否执行；用超跌反转和强势回踩两套策略找机会，用市场与隔夜风险过滤，用仓位和回测决定这套方法是否值得长期使用。</div>
+<p>这是一套可执行的研究和交易决策框架，不是已经验证盈利的量化策略。当前两个东山精密案例只能帮助我们发现规则缺口，不能证明未来胜率。下一步应先拿到统一口径的历史日线、分钟线、板块指数、公告时间和交易成本数据，完成无未来信息泄漏的滚动回测，再决定是否将候选排序和阈值用于真实资金。</p>
+<div class="foot">专题记录 · 2026-11-06 · 本文为交易研究方法与历史案例复盘，不构成个股投资建议。行情快照需以交易所和券商原始数据复核；所有预测应保留数据截止时间与事前记录。</div>
+</article>
+</main>
+</div>
+</body>
+</html>

@@ -19,5 +19,6 @@
 13. [13 CFO Research Graph：论文贡献与缺边](13-cfo-research-contribution-graph.html)
 14. [14 CFO 方法贡献：决策关键依赖 DAG](14-cfo-decision-critical-dag-method.html)
 15. [15 CFO-Bench 研究方向调整：从会议决策到论文路线图](15-cfo-benchmark-research-direction.html)
+16. [16 提前一天判断明天：A股短线交易的 T-1 预测系统](16-next-day-stock-forecast.html)
 
 线上站点由 Vercel 部署，GitHub `main` 更新后自动触发生产部署。
