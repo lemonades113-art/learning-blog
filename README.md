@@ -20,5 +20,7 @@
 14. [14 CFO 方法贡献：决策关键依赖 DAG](14-cfo-decision-critical-dag-method.html)
 15. [15 CFO-Bench 研究方向调整：从会议决策到论文路线图](15-cfo-benchmark-research-direction.html)
 16. [16 提前一天判断明天：A股短线交易的 T-1 预测系统](16-next-day-stock-forecast.html)
+17. [17 Simeco × CFO：从业务事件到可验证财务 Agent 任务合成](17-simeco-cfo-task-synthesis.html)
+18. [18 研究问题驱动的专业 Agent Benchmark 构造](18-research-question-driven-benchmark-construction.html)
 
 线上站点由 Vercel 部署，GitHub `main` 更新后自动触发生产部署。
