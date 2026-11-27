@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>研究问题驱动的专业 Agent Benchmark 构造｜学习博客</title>
+<meta name="description" content="从专业能力测量出发，比较不同 Benchmark 的任务构造路径，明确 CFO-WorkBench 的研究设计逻辑、必要构造模块与实验验证。">
+<link rel="stylesheet" href="styles.css">
+<style>
+.article{max-width:none}.article h1{margin-bottom:14px}.article h2{margin-top:42px;scroll-margin-top:24px}.article h3{font-size:20px;margin:30px 0 12px;line-height:1.55}.article h4{font-size:17px;margin:24px 0 10px;line-height:1.55}.article p{margin:12px 0 17px;line-height:1.9}.article ul,.article ol{padding-left:25px;line-height:1.9}.article li{margin:7px 0}.article table{border-collapse:collapse;width:100%;font-size:14px}.article th,.article td{padding:10px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}.article th{background:#f4f5ef;color:#35574c;font-weight:700}.table-wrap{overflow-x:auto;margin:18px 0 28px;border:1px solid var(--line);border-radius:12px}.article code{background:#f1f1ed;padding:2px 5px;border-radius:4px;font-size:.9em}.article pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#20352f;color:#ecf4ef;padding:18px;border-radius:12px;font-size:13px;line-height:1.75}.article .lead{font-size:19px;line-height:1.85;color:#3e4c44}.article .eyebrow{letter-spacing:.12em;text-transform:uppercase;color:#688477;font-size:12px;font-weight:700}.article .callout{padding:20px 23px;background:#eef5f1;border:1px solid #d5e5dc;border-radius:12px;margin:22px 0;line-height:1.9}.article .warning{padding:16px 20px;background:#fbf7e9;border:1px solid #e8dfb9;border-radius:12px;margin:18px 0;line-height:1.8}.article .toc{background:#f7f8f4;border:1px solid var(--line);border-radius:13px;padding:18px 22px;margin:28px 0;line-height:1.8}.article .toc a{display:block;text-decoration:none;padding:4px 0;color:var(--accent)}.article .flow{border:1px solid #dce7dc;background:#f8faf7;border-radius:14px;padding:17px;margin:18px 0}.article .flowrow{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:9px 0}.article .node{flex:1;min-width:145px;text-align:center;border:1px solid #cbdccf;background:white;border-radius:10px;padding:12px;font-weight:700;font-size:14px}.article .node.blue{border-color:#bad0e8;background:#ecf3fd;color:#335b86}.article .node.green{border-color:#b8dabc;background:#edf7eb;color:#355d3c}.article .node.gold{border-color:#e8d49e;background:#fdf4d9;color:#815e22}.article .arrow{font-size:20px;color:#7e9c8b}.article .muted{color:#738077;font-size:13px}.article .pill{display:inline-block;padding:4px 10px;border-radius:99px;background:#eaf2ea;color:#32604a;font-size:12px;font-weight:700;margin:2px 4px 2px 0}
+@media(max-width:650px){.article table{font-size:12px}.article th,.article td{padding:8px}.article .flowrow{flex-direction:column}.article .node{width:100%}.article .arrow{transform:rotate(90deg)}}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar">
+<div class="brand">学习博客</div>
+<div class="brand-sub">先确定要测量的专业能力，再决定任务应该怎样构造。</div>
+<div class="nav-title">本篇目录</div>
+<div class="nav">
+<a href="index.html">← 返回全部文章</a>
+<a href="#position">01 · 先确定论文应该怎么讲</a>
+<a href="#related">02 · 论文中可以直接这样写</a>
+<a href="#logic">03 · 研究逻辑图</a>
+<a href="#cfo">04 · 结合 CFO 链路包落地</a>
+<a href="#contribution">05 · 论文应该突出什么贡献</a>
+<a href="#outline">06 · 论文结构</a>
+</div>
+</aside>
+<main class="main">
+<a href="index.html" class="back">← 返回首页</a>
+<article class="article">
+<div class="eyebrow">18 · CFO / Benchmark Design / Task Construction · 2026-11-27</div>
+<h1>研究问题驱动的专业 Agent Benchmark 构造</h1>
+<p class="lead">我觉得这部分应该写成论文里的一个研究设计逻辑，核心是回答：</p>
+<p><strong>为什么不同 Benchmark 采用不同的题目合成方式？我们应该如何为 CFO-WorkBench 选择合适的构造方法？</strong></p>
+<p>这里不能写成“我们把 Data World、WorkFactory、FinancialAuditBench 的方法整合起来”，因为这会让人觉得我们只是堆砌已有技术。</p>
+<p>我建议把核心观点写成：</p>
+<blockquote><p>专业 Agent Benchmark 的构造不存在统一的技术路径。不同研究根据其希望测量的能力、任务单位和评价目标，选择不同的任务构造机制。因此，Benchmark 的设计应从研究问题出发，确定必要的任务要素，再选择能够支持目标测量的构造方法，而非预先要求所有系统具备相同的生成组件。</p></blockquote>
+<p>这句话可以成为这一节的中心论点。</p>
+
+<h2 id="position">一、先确定论文应该怎么讲</h2>
+<p>我建议分成三个层次，千万不要一上来就写 DAG、Oracle、Kernel、Rubric。</p>
+<p><strong>第一层：研究为什么需要这类 Benchmark。</strong></p>
+<p>企业专业工作很复杂，模型在知识问答、单步计算上的成绩，无法充分说明它能否完成实际工作。Benchmark 要把专业能力变成可执行任务，并通过专业交付物评价模型。</p>
+<p><strong>第二层：已有研究是怎么构造任务的。</strong></p>
+<ul>
+<li>Data World：从业务世界生成机制出发。</li>
+<li>FinancialAuditBench：从真实审计统计和专业知识出发。</li>
+<li>WorkFactory：从专业工作意图出发。</li>
+<li>APEX-Accounting：从专家编写的会计工作任务出发。</li>
+<li>DeliverBench：从真实项目和多阶段交付出发。</li>
+</ul>
+<p>这些方法对应不同的研究目标、任务单位和评价对象。</p>
+<p><strong>第三层：我们为什么选择自己的方法。</strong></p>
+<p>根据 CFO-WorkBench 想测量的能力，确定需要哪些业务材料、专业规则、参考标准和评分机制，再选择适当的生成和验证组件。</p>
+<p>这里的核心概念，我建议叫：</p>
+<div class="callout">
+<h3 style="margin:0 0 7px">Research-question-driven Task Construction</h3>
+<p style="margin:0"><strong>研究问题驱动的任务构造</strong></p>
+<p style="margin:7px 0 0;color:#53665a">根据目标测量能力，选择最小充分的任务生产与验证机制。</p>
+</div>
+
+<h2 id="related">二、论文中可以直接这样写</h2>
+<p>下面这版可以作为论文 Methodology 前面的研究设计论述，也可以作为 Related Work 最后一节的过渡。</p>
+<div class="callout"><strong>论文正文草稿</strong></div>
+<h3>2.X 研究问题驱动的专业 Agent Benchmark 构造</h3>
+<h4>1. 从专业能力测量到任务构造</h4>
+<p>专业 Agent Benchmark 的核心目标，是评估模型在特定专业工作环境中完成实际工作的能力。与传统知识问答和单步计算任务相比，专业工作通常涉及多源信息获取、业务规则应用、专业判断以及结构化交付。因此，Benchmark 需要将目标专业能力转化为可执行的工作任务，并通过可观察的交付结果和专业评价标准衡量模型表现。</p>
+<p>这一目标带来了一个重要的构造问题：如何将复杂的专业工作转化为具有业务真实性、信息充分性和可评价性的 Agent 任务？</p>
+<h4>2. 现有研究采用了不同的任务构造路径</h4>
+<p>近期专业 Agent Benchmark 与任务合成研究呈现出多种不同的构造方式。</p>
+<p>Data World 从业务世界的生成机制出发，先定义变量之间的关系并构建底层真实状态，再将其投影为具有现实数据特征的文件，进而生成分析任务和评价标准。其设计重点在于解决开放式数据分析任务中的真值可追溯与结果可验证问题（Li et al., 2026）。</p>
+<p>FinancialAuditBench 从真实审计业务统计和专业知识出发，利用差分隐私聚合统计、财务计算关系及审计专家参与，构建合成企业审计项目和工作底稿。其重点在于解决真实审计数据难以公开获取的限制，同时保留专业审计任务的真实性和可评价性（Huang et al., 2026）。</p>
+<p>WorkFactory 从专业工作意图出发，通过信息支持图识别完成目标交付所需的信息及其来源，再利用执行探测和任务修复提高生成环境的可执行性，最终收集教师模型的执行轨迹。其重点在于规模化生产能够支持可靠专家监督的专业训练任务（Zeng et al., 2026）。</p>
+<p>APEX-Accounting 采用专家主导的任务构造方式，由会计专业人员在模拟企业环境中设计并完成任务，同时制定相应评分标准，以直接评估模型完成日常会计工作的能力（Benchek et al., 2026）。</p>
+<p>DeliverBench 则以真实专业项目为起点，由领域专家还原项目工作流程，将多个子任务及其交付依赖连接起来，并通过后续材料和客户反馈考察 Agent 的持续交付能力（Liu et al., 2026）。</p>
+<p>这些研究表明，专业 Agent 任务可以从业务世界、专业工作意图、领域专家和真实项目等不同起点构造。其差异反映了研究目标、任务单位、输入环境和评价对象的不同，并不要求所有 Benchmark 采用完全相同的生成架构。</p>
+<h4>3. 任务构造的共同要求与可选机制</h4>
+<p>尽管具体生产路径不同，一个可用于专业能力测量的 Benchmark 仍需要回答几个共同问题：</p>
+<ol>
+<li><strong>目标能力是否明确：</strong> 任务实际测量什么专业能力，任务设计是否能够体现该能力？</li>
+<li><strong>输入是否充分：</strong> Agent 能否从提供的业务材料和工具环境中获得完成任务所需的信息？</li>
+<li><strong>结果是否可验证：</strong> 是否存在可信的参考结果、专业规则或可接受答案范围？</li>
+<li><strong>评分是否有效：</strong> 评价标准能否反映专业工作的正确性、证据支持和交付质量？</li>
+<li><strong>任务是否经过验证：</strong> 是否通过独立执行、专业审核和实际模型测试，检查任务的可解性、真实性及区分能力？</li>
+</ol>
+<p>在此基础上，世界生成器、信息依赖图、计算依赖图、专家出题、教师轨迹、多阶段状态机等均可作为任务构造的可选机制。是否采用某一机制，应由目标任务的实际要求决定。</p>
+<p>例如，研究跨文件证据核查，需要保证不同材料之间存在可追溯的事实关系；研究多阶段项目交付，需要保留前序产物及其后续依赖；研究确定性财务计算，则可以通过可复算的业务内核和独立边界测试建立参考标准。</p>
+<p>因此，Benchmark 构造更适合采用研究问题驱动的模块化设计：首先确定目标能力和任务单位，再选择满足任务真实性、可解性和可评价性要求的必要构造机制，并通过独立验证确认其有效性。</p>
+<h4>4. 对 CFO-WorkBench 的设计启示</h4>
+<p>对于企业财务 Agent，研究重点应落在具体的企业专业工作机制及其测量缺口上。不同 CFO 工作任务具有不同的信息结构和决策要求，因此应根据具体任务选择构造方式。</p>
+<p>例如，集团内部资金往来核查需要关联不同法律实体的账簿、合同和银行流水，重点在于多源证据的关联及专业核对；目标导向的证据搜寻任务需要控制委托目标与可用证据之间的关系，重点在于观察目标变化是否影响 Agent 的证据搜索和使用行为；完整 CFO 项目交付则需要记录阶段依赖、文件版本和外部反馈，重点在于评价跨阶段交付的一致性。</p>
+<p>因此，CFO-WorkBench 应以目标专业能力为依据，为不同任务族配置相应的材料生成、参考结果、评分和验证机制，并共享必要的生产与质量控制基础设施。</p>
+<p>最终，研究贡献应建立在对特定企业专业能力测量缺口的识别，以及对相应任务设计有效性的实证验证之上，而非仅以生成组件的数量或系统架构的复杂程度作为依据。</p>
+
+<h2 id="logic">三、这段话背后的研究逻辑，可以用一张图表达</h2>
+<p>这张图表达的就是：<strong>共同的研究目标与质量要求，允许不同的任务生产路径。</strong></p>
+<div class="flow">
+<div class="flowrow"><div class="node blue">研究问题<br>想测量 Agent 的什么能力？</div></div>
+<div class="flowrow"><span class="arrow">↓</span></div>
+<div class="flowrow"><div class="node">任务单位<br>单项工作、专业委托还是完整项目？</div></div>
+<div class="flowrow"><span class="arrow">↓</span></div>
+<div class="flowrow"><div class="node">确定必要的任务要素<br>业务事实、材料、规则、交付物</div></div>
+<div class="flowrow"><span class="arrow">↓</span></div>
+<div class="flowrow"><div class="node gold">选择构造路线</div></div>
+<div class="flowrow">
+<div class="node">专家主导构造</div><div class="node">程序化世界生成</div><div class="node">专业意图反向规划</div><div class="node">真实项目重建</div>
+</div>
+<div class="flowrow"><span class="arrow">↓</span></div>
+<div class="flowrow"><div class="node">任务包</div></div>
+<div class="flowrow"><span class="arrow">↓</span></div>
+<div class="flowrow"><div class="node">参考答案与评分标准</div></div>
+<div class="flowrow"><span class="arrow">↓</span></div>
+<div class="flowrow"><div class="node gold">独立验证<br>真实性、可解性、评分有效性</div></div>
+<div class="flowrow"><span class="arrow">↓</span></div>
+<div class="flowrow"><div class="node green">实际模型评测</div></div>
+<div class="flowrow"><span class="arrow">↓</span></div>
+<div class="flowrow"><div class="node green">验证目标能力是否被有效测量</div></div>
+</div>
+<p>这张图表达的就是：<strong>共同的研究目标与质量要求，允许不同的任务生产路径。</strong></p>
+
+<h2 id="cfo">四、结合你刚上传的 CFO 链路包，应该怎么落地？</h2>
+<p>我看了一下你们现有的 CFO 生产链，这里有一个很好的例子。</p>
+<p>你们已经有一条比较复杂的 CFO 任务生产线。</p>
+<p>例如 CFS01：</p>
+<ul>
+<li>任务：2025 年度集团资金情况；</li>
+<li>输入：89 份文件；</li>
+<li>交付：Excel 现金流量表及流水分类底稿、Word CFO 汇报；</li>
+<li>任务涉及：集团资金状况、交通银行年度报送、新产线资本开支、对香港公司追加放款；</li>
+<li>Claims：84 条；</li>
+<li>Score Spec：173 项评分标准；</li>
+<li>Source Registry：369 条来源记录；</li>
+<li>Rule Registry：29 条规则；</li>
+<li>Gaps：9 项信息缺口记录。</li>
+</ul>
+<p>这说明 CFS01 的任务单位已经是一个综合财务工作委托，涉及大量材料、专业规则和多项交付要求。</p>
+<p>它的生产质量也有明确的工程化设计。</p>
+<p>交付包 README 描述的通用单题流水是：</p>
+<div class="flow">
+<div class="flowrow"><div class="node blue">场景生成</div><span class="arrow">→</span><div class="node">独立 Oracle</div><span class="arrow">→</span><div class="node">机检</div></div>
+<div class="flowrow"><span class="arrow">↓</span></div>
+<div class="flowrow"><div class="node">失分矩阵</div><span class="arrow">→</span><div class="node gold">有效难度</div><span class="arrow">→</span><div class="node green">验收收据</div></div>
+</div>
+<p>这里还有一个值得强调的细节：</p>
+<p>CFO 生产线采用场景族生成器加共享质检引擎的结构。包内 README 记录了 111 个 CFO 场景族，以及 75 个现有题号的对应生成器。</p>
+<p>而且它自己的 DAG 也按任务线区分：</p>
+<ul>
+<li>线1：一次性红旗检测任务，DAG 表示定位、取数、复算、交叉核对、量化和判定。</li>
+<li>线2：递归多期状态任务，DAG 表示逐期计算及跨期依赖。</li>
+</ul>
+<p>这比要求所有 CFO 任务都使用同一种 DAG 更合理。</p>
+<p>需要注意，上述是交付包内的任务配置和架构记录，数量及结构不等于本轮已经完成全生产线的独立运行验收。</p>
+
+<h2 id="contribution">五、论文究竟应该突出什么贡献？</h2>
+<p>我建议你特别注意这三句话：</p>
+<div class="table-wrap"><table><thead><tr><th>不建议这样写</th><th>建议这样写</th></tr></thead><tbody>
+<tr><td>我 们融合了五篇论文的任务生成方法</td><td>我们根据目标专业能力选择任务构造机制</td></tr>
+<tr><td>我们设计了一个包含多种 DAG 的复杂系统</td><td>我们将业务依赖、证据支持和任务执行分别建模，以满足具体任务需求</td></tr>
+<tr><td>我们生成了大量复杂财务题</td><td>我们定义了目标任务单位，并验证其能否测量目标专业能力</td></tr>
+</tbody></table></div>
+<p>还有一个更深的区别：</p>
+<p><strong>Benchmark 是测量工具，Task Factory 是生产工具。</strong></p>
+<p>Factory 可以有很多模块，但每一道题只需要使用与它的研究目标相关的模块。</p>
+<p>Benchmark 最终需要证明的是测量有效性，而不是工厂有多少个文件、多少张 DAG、多少个生成器。</p>
+
+<h2 id="outline">六、我建议最终论文按照这个结构组织</h2>
+<div class="callout">
+<p><strong>Introduction</strong></p>
+<ol>
+<li>企业专业 Agent 为什么需要新的能力测量？</li>
+<li>现有财务 Agent Benchmark 测量了什么？</li>
+<li>我们发现了什么具体测量缺口？</li>
+<li>我们提出什么任务单位和 Benchmark？</li>
+</ol>
+<hr>
+<p><strong>Related Work</strong></p>
+<ol>
+<li>专业 Agent Benchmark 的任务设计；</li>
+<li>合成业务环境与数据生成；</li>
+<li>专业工作流与多阶段交付。</li>
+</ol>
+<hr>
+<p><strong>Benchmark Design</strong></p>
+<ol>
+<li>Research Question；</li>
+<li>Target Capability；</li>
+<li>Task Unit；</li>
+<li>Task Construction；</li>
+<li>Oracle and Rubric；</li>
+<li>Quality Assurance。</li>
+</ol>
+<hr>
+<p><strong>Experiments</strong></p>
+<ol>
+<li>模型总体表现；</li>
+<li>不同能力维度的表现；</li>
+<li>失败模式；</li>
+<li>专家评分一致性；</li>
+<li>消融实验与有效性分析。</li>
+</ol>
+</div>
+<p>我的建议是：现在先把 Related Work 和 Benchmark Design 之间的逻辑写好，暂时不要急着宣布 CFO-WorkBench 采用哪一种完整生产架构。</p>
+<p>因为你们真正要争取的论文贡献，可能来自发现现有财务 Agent Benchmark 没有充分测量的某种企业专业工作机制。那时我们才知道需要补充世界生成、证据关系、多轮状态，还是一种完全不同的任务设计。</p>
+<div class="warning">另外提醒：刚上传的压缩包中有 README 含疑似有效的外部数据源账号和 Token 明文，建议及时轮换，并在后续共享版本中清理。</div>
+<p>下一步我最建议做的是：把 CFO-WorkBench 现有的三个候选 Story 分别代入这套框架，写出每个 Story 的任务单位、必要构造模块、现有 Benchmark 缺口和实验假设。这样我们就能从“怎么建工厂”真正走到“这篇论文研究什么”。</p>
+</article>
+<footer>学习博客 · 2026-11-27 · Research-question-driven Benchmark Construction</footer>
+</main>
+</div>
+</body>
+</html>
